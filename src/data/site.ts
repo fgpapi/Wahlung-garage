@@ -8,7 +8,7 @@ export const SITE = {
   name: 'Wahlung Garage',
   tagline: 'Mecánica & Pintura',
   /** Update once the domain is live; used for canonical, Open Graph and JSON-LD. */
-  url: 'https://wahlunggarage.com',
+  url: 'https://wahlung-garage.vercel.app',
   city: 'Tegucigalpa',
   country: 'Honduras',
 } as const;

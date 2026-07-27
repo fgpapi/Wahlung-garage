@@ -234,12 +234,27 @@ configurar nada más:
 > si esa descarga falla **tumba el build entero**. Vercel nunca ejecuta ffmpeg, así
 > que se omite. Localmente sí se instala normal con `npm install`.
 
-Después de publicar con el dominio real, actualice el dominio en:
+### Ya está publicado
 
-- `index.html` — `canonical`, etiquetas `og:` y el bloque `JSON-LD`
+- Producción: **https://wahlung-garage.vercel.app**
+- Proyecto en Vercel: `fabiog/wahlung-garage`
+
+Para volver a publicar después de un cambio:
+
+```bash
+npx vercel deploy --prod
+```
+
+### Cuando compren el dominio propio
+
+Hoy el dominio está puesto como `wahlung-garage.vercel.app` en **cuatro** lugares.
+Cámbielos todos al dominio real el mismo día que lo conecten, porque el
+`canonical` le dice a Google cuál es la dirección oficial del sitio:
+
+- `index.html` — `canonical`, etiquetas `og:`/`twitter:` y el bloque `JSON-LD`
 - `src/data/site.ts` — `SITE.url`
-- `public/sitemap.xml`
-- `public/robots.txt`
+- `public/sitemap.xml` — la etiqueta `<loc>`
+- `public/robots.txt` — la línea `Sitemap:`
 
 ---
 

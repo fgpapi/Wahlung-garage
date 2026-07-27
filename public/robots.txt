@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://wahlunggarage.com/sitemap.xml
+Sitemap: https://wahlung-garage.vercel.app/sitemap.xml

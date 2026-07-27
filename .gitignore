@@ -24,3 +24,6 @@ pnpm-debug.log*
 # Local Claude Code tooling, not part of the deliverable
 .claude
 .impeccable
+
+# Vercel CLI (.vercel is already ignored above)
+.env*

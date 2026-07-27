@@ -227,6 +227,12 @@ configurar nada más:
 - Framework: Vite (detectado solo)
 - Build: `npm run build`
 - Output: `dist`
+- Install: `npm install --ignore-scripts`
+
+> **Por qué `--ignore-scripts`:** `ffmpeg-static` (que solo se usa localmente para
+> regenerar el video) descarga un binario de 79 MB en su script de instalación, y
+> si esa descarga falla **tumba el build entero**. Vercel nunca ejecuta ffmpeg, así
+> que se omite. Localmente sí se instala normal con `npm install`.
 
 Después de publicar con el dominio real, actualice el dominio en:
 

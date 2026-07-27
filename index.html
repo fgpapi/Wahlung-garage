@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es-HN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0A0C10" />
+
+    <title>Wahlung Garage | Enderezado, Pintura y Mecánica en Tegucigalpa</title>
+    <meta
+      name="description"
+      content="Taller de enderezado y pintura, mecánica general, polarizado y tapicería en Aldea Germania, Tegucigalpa. Igualación de color por código de fábrica, garantía por escrito y presupuesto gratis por WhatsApp."
+    />
+    <link rel="canonical" href="https://wahlunggarage.com/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- The hero still is the LCP element on mobile, where the video never loads. -->
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-poster-800.jpg"
+      imagesrcset="/hero-poster-800.jpg 800w, /hero-poster.jpg 1600w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wahlung Garage" />
+    <meta property="og:locale" content="es_HN" />
+    <meta property="og:url" content="https://wahlunggarage.com/" />
+    <meta
+      property="og:title"
+      content="Wahlung Garage | Enderezado, Pintura y Mecánica en Tegucigalpa"
+    />
+    <meta
+      property="og:description"
+      content="Enderezado y pintura con igualación por código de fábrica, mecánica general, polarizado y tapicería. Presupuesto gratis por WhatsApp y garantía por escrito."
+    />
+    <meta property="og:image" content="https://wahlunggarage.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Técnico de Wahlung Garage pintando un vehículo en cabina cerrada"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Wahlung Garage | Enderezado, Pintura y Mecánica en Tegucigalpa"
+    />
+    <meta
+      name="twitter:description"
+      content="Enderezado y pintura con igualación por código de fábrica, mecánica general, polarizado y tapicería en Tegucigalpa."
+    />
+    <meta name="twitter:image" content="https://wahlunggarage.com/og-image.jpg" />
+
+    <!--
+      Structured data. NOTE: the address, phones and hours are also defined in
+      src/data/site.ts for the UI. If the shop's details change, update BOTH —
+      see README.md ("Cambiar teléfonos, dirección u horario").
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["AutoRepair", "LocalBusiness"],
+        "@id": "https://wahlunggarage.com/#business",
+        "name": "Wahlung Garage",
+        "description": "Taller de enderezado y pintura, mecánica general, polarizado y tapicería en Tegucigalpa, Honduras.",
+        "url": "https://wahlunggarage.com/",
+        "image": "https://wahlunggarage.com/og-image.jpg",
+        "logo": "https://wahlunggarage.com/logo.webp",
+        "telephone": "+504 8825-0870",
+        "priceRange": "$$",
+        "currenciesAccepted": "HNL",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Aldea Germania, calle principal, atrás de Economuebles",
+          "addressLocality": "Tegucigalpa",
+          "addressRegion": "Francisco Morazán",
+          "addressCountry": "HN"
+        },
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+50488250870",
+            "contactType": "customer service",
+            "areaServed": "HN",
+            "availableLanguage": "Spanish"
+          },
+          {
+            "@type": "ContactPoint",
+            "telephone": "+50433669984",
+            "contactType": "customer service",
+            "areaServed": "HN",
+            "availableLanguage": "Spanish"
+          }
+        ],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "08:00",
+            "closes": "18:00"
+          }
+        ],
+        "areaServed": {
+          "@type": "City",
+          "name": "Tegucigalpa"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Servicios de Wahlung Garage",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Enderezado y Pintura",
+                "description": "Enderezado de lámina, corrección de estructura y pintura en cabina cerrada con igualación de color por código de fábrica."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Mecánica General",
+                "description": "Diagnóstico con escáner, mantenimiento y reparación de motor, frenos, suspensión y dirección."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Polarizado",
+                "description": "Instalación de película para vidrios cortada a medida, con garantía contra burbujas y despegue."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Tapicería",
+                "description": "Forrado y restauración de asientos, cielo, timón y paneles de puerta."
+              }
+            }
+          ]
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

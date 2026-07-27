@@ -1,0 +1,276 @@
+@import 'tailwindcss';
+
+/* Self-hosted so there is no render-blocking request to a font CDN.
+   Archivo is loaded as the weight-only variable build (34 KB latin) rather than
+   the weight+width build (88 KB). The width axis bought a 4-12% expansion for
+   54 KB, which is the wrong trade on a page built for Honduran mobile data; the
+   industrial breadth comes from weight and tracking instead.
+   IBM Plex is pulled per-weight so nothing unused ships. */
+@import '@fontsource-variable/archivo/wght.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
+
+@theme {
+  /* ---------------------------------------------------------------------
+     Colour. Every brand value below was sampled from media/logo.source.jpeg
+     rather than guessed. Contrast ratios are stated against the surface the
+     token is actually used on and verified in scripts/check-contrast.mjs.
+     --------------------------------------------------------------------- */
+
+  /* Orange - action and accent only. #FF6600 is 2.94:1 on white, so it is
+     never text on a light surface: it is a fill, and fills carry INK text
+     (6.67:1). --color-brand-primary-ink is the one orange allowed as text. */
+  --color-brand-primary: #ff6600; /* sampled: "GARAGE" wordmark */
+  /* Derived, not sampled. The logo's deeper splash tone (#D74506) drops the ink
+     label to 4.42:1, because darkening an orange fill *reduces* its contrast with
+     black text. This is the darkest hover that still clears AA at 5.49:1. */
+  --color-brand-primary-hover: #e65c00;
+  --color-brand-primary-ink: #b93504; /* sampled: deepest splash; 5.88:1 on white */
+
+  /* Blue - structure and trust. */
+  --color-brand-navy: #042653; /* sampled: "WAHLUNG" wordmark; 14.92:1 on white */
+  --color-brand-secondary: #005acc; /* sampled: the five stars; 6.30:1 on white */
+  --color-brand-bright: #009ef7; /* sampled: blue splash; dark surfaces only, 6.74:1 */
+
+  /* Neutrals do the heavy lifting. */
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f5f7;
+  --color-surface-invert: #0a0c10;
+  --color-surface-raised: #12161c; /* cards on an inverted surface */
+
+  --color-ink: #0a0c10; /* 19.57:1 on white */
+  --color-ink-muted: #56606f; /* 6.44:1 on white */
+  --color-ink-subtle: #6b7583; /* 4.75:1 on white - smallest allowed */
+  --color-ink-invert: #ffffff;
+  --color-ink-invert-muted: #a8b2c1; /* 8.62:1 on #0A0C10 */
+
+  --color-line: #dfe3e8;
+  --color-line-strong: #c3cad3;
+  --color-line-invert: #232a33;
+  --color-line-invert-strong: #39424e;
+
+  /* ---------------------------------------------------------------------
+     Type. A deliberate two-family pairing: Archivo for display (an expanded
+     grotesque that reads stamped rather than branded) and the IBM Plex
+     superfamily for body plus technical labels.
+     --------------------------------------------------------------------- */
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Square corners are a deliberate rejection of the rounded-2xl default.
+     The only radius in the system is the 2px used on tiny inline chips. */
+  --radius-chip: 2px;
+
+  --ease-out-firm: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --breakpoint-xs: 26.25rem; /* 420px */
+}
+
+/* Focus indicators must clear 3:1 against whatever sits behind them
+   (WCAG 2.2 SC 1.4.11), so the colour flips on inverted surfaces. */
+:root {
+  --focus-ring: var(--color-brand-secondary); /* 6.30:1 on white */
+}
+[data-surface='dark'] {
+  --focus-ring: var(--color-brand-bright); /* 6.74:1 on #0A0C10 */
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Sticky header height plus breathing room, so anchored sections are not
+       hidden behind the bar when a nav link jumps to them. */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Guarantees the "no horizontal scroll at any width" requirement even if a
+       decorative element overshoots. */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Only remove the default ring where a bespoke one is drawn instead. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-primary);
+    color: var(--color-ink);
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Phone numbers, prices and readouts must not reflow as digits change. */
+  .font-mono,
+  [class*='font-mono'] {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ---- Type roles ---------------------------------------------------- */
+
+  .type-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .type-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .type-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+
+  /* The technical voice: section numbers, part codes, readouts. */
+  .type-eyebrow {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Signature motif ------------------------------------------------
+     Registration marks, as on a technical drawing or a print proof. They tie
+     the photo placeholders, the gallery and the comparator into one language
+     and make empty slots read as deliberate rather than broken. */
+  .registration-frame {
+    position: relative;
+  }
+  .registration-frame::before,
+  .registration-frame::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--reg-color, var(--color-line-strong));
+    border-style: solid;
+    pointer-events: none;
+  }
+  .registration-frame::before {
+    top: 8px;
+    left: 8px;
+    border-width: 1px 0 0 1px;
+  }
+  .registration-frame::after {
+    right: 8px;
+    bottom: 8px;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* Faint machined hatching for empty photo slots. */
+  .texture-diagonal {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--texture-color, rgb(255 255 255 / 0.028)) 0,
+      var(--texture-color, rgb(255 255 255 / 0.028)) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+  }
+
+  /* ---- Skip link ------------------------------------------------------- */
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 200;
+    transform: translateY(-160%);
+    background-color: var(--color-brand-primary);
+    color: var(--color-ink);
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 160ms var(--ease-out-firm);
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  /* Fixed UI (floating CTA) must clear the iOS home indicator. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Reduced motion is honoured everywhere, not only in the hero. Framer Motion
+   reveals are separately short-circuited in useReducedMotion so elements mount
+   visible rather than merely snapping into place. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

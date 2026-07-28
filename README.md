@@ -25,7 +25,9 @@ npm run dev          # http://127.0.0.1:5173
 | `npm run check:contrast` | Verifica todos los pares de color contra WCAG |
 | `npm run audit` | Revisa responsive, accesibilidad e interacciones en Chrome real |
 | `npm run assets:media` | Regenera el video y el póster del hero |
-| `npm run assets:logo` | Regenera el logo, el ícono y la imagen social |
+| `npm run assets:logo` | Regenera el logo y el emblema desde el arte original |
+| `npm run assets:photos` | Regenera las fotos de `source-images/` a `public/images/` |
+| `npm run assets:icons` | Regenera los íconos, el manifest y la imagen social |
 
 > `npm install` puede pedir aprobar scripts de instalación (npm 11).
 > Ejecute `npm approve-scripts esbuild ffmpeg-static` si aparece la advertencia.
@@ -164,8 +166,10 @@ Los originales están en `media/` y **no se publican**. De ahí se generan los
 archivos de `public/`:
 
 ```bash
-npm run assets:media   # video del hero + pósters   (necesita ffmpeg-static)
-npm run assets:logo    # logo, ícono, imagen social (Windows: usa .NET)
+npm run assets:media   # video del hero + pósters      (necesita ffmpeg-static)
+npm run assets:logo    # logo y emblema               (Windows: usa .NET)
+npm run assets:photos  # fotos del taller             (necesita ffmpeg-static)
+npm run assets:icons   # íconos, manifest, og-image   (necesita Chrome)
 ```
 
 | Generado | Origen | Para qué |
@@ -175,7 +179,11 @@ npm run assets:logo    # logo, ícono, imagen social (Windows: usa .NET)
 | `public/hero-poster-800.jpg` | primer cuadro del video | Imagen fija en celular |
 | `public/logo.webp` | `media/logo.source.jpeg` | Logo completo, para fondos claros |
 | `public/logo-mark.webp` | `media/logo.source.jpeg` | Solo el emblema, sirve en claro y oscuro |
-| `public/og-image.jpg` | póster + emblema | Vista previa al compartir el enlace |
+| `public/og-image.jpg` | póster + emblema + tipografía | Vista previa al compartir. La marca va centrada para sobrevivir el recorte cuadrado de WhatsApp |
+| `public/favicon.ico` | `public/favicon.svg` | Ícono de pestaña, 16/32/48 |
+| `public/apple-touch-icon.png` | `public/favicon.svg` | Pantalla de inicio en iOS, 180x180 |
+| `public/icon-192.png`, `icon-512.png`, `icon-512-maskable.png` | `public/favicon.svg` | Íconos del manifest en Android |
+| `public/site.webmanifest` | `scripts/build-icons.mjs` | Nombre, colores e íconos al instalar |
 
 **Para cambiar el video del hero:** reemplace `media/hero.source.mp4` y ejecute
 `npm run assets:media`. Los archivos generados sí se suben a git — Vercel no
@@ -236,7 +244,7 @@ configurar nada más:
 
 ### Ya está publicado
 
-- Producción: **https://wahlung-garage.vercel.app**
+- Producción: **https://wahlung-garage.vercel.app** (valor por defecto de `DEFAULT_SITE_URL`)
 - Proyecto en Vercel: `fabiog/wahlung-garage`
 
 Para volver a publicar después de un cambio:
@@ -247,14 +255,34 @@ npx vercel deploy --prod
 
 ### Cuando compren el dominio propio
 
-Hoy el dominio está puesto como `wahlung-garage.vercel.app` en **cuatro** lugares.
-Cámbielos todos al dominio real el mismo día que lo conecten, porque el
-`canonical` le dice a Google cuál es la dirección oficial del sitio:
+El dominio se configura en **un solo lugar**. Hágalo el mismo día que conecten el
+dominio real, porque el `canonical` le dice a Google cuál es la dirección oficial
+del sitio.
 
-- `index.html` — `canonical`, etiquetas `og:`/`twitter:` y el bloque `JSON-LD`
-- `src/data/site.ts` — `SITE.url`
-- `public/sitemap.xml` — la etiqueta `<loc>`
-- `public/robots.txt` — la línea `Sitemap:`
+**Opción recomendada — variable de entorno en Vercel:**
+
+```
+VITE_SITE_URL = https://sudominio.com
+```
+
+Agréguela en *Project → Settings → Environment Variables* y vuelva a desplegar.
+No hace falta tocar ningún archivo.
+
+**Opción alterna — cambiar el valor por defecto:** edite `DEFAULT_SITE_URL` en
+`src/lib/site-url.ts`.
+
+De ahí se derivan solas, en build, todas las URL absolutas:
+
+| Dónde | Qué se llena |
+|---|---|
+| `index.html` | `canonical`, `og:url`, `og:image`, `twitter:image` y `@id`/`url`/`image`/`logo` del `JSON-LD` |
+| `dist/robots.txt` | la línea `Sitemap:` |
+| `dist/sitemap.xml` | la etiqueta `<loc>` |
+| `src/data/site.ts` | `SITE_URL`, para cualquier uso desde React |
+
+> `robots.txt` y `sitemap.xml` ya **no** están en `public/`: los genera el plugin
+> `site-urls` de `vite.config.ts`, para que no exista una segunda copia del
+> dominio que se olvide de actualizar.
 
 ---
 

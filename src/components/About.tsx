@@ -2,7 +2,7 @@ import { Container } from './ui/Container';
 import { SectionHeader } from './ui/SectionHeader';
 import { Photo } from './ui/Photo';
 import { Reveal } from './ui/Reveal';
-import { ABOUT_PHOTO } from '../data/gallery';
+import { ABOUT_PHOTOS } from '../data/gallery';
 import { SECTIONS } from '../data/copy';
 
 export function About() {
@@ -16,7 +16,6 @@ export function About() {
     >
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}
@@ -24,8 +23,22 @@ export function About() {
         />
 
         <div className="mt-12 grid items-start gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-16">
+          {/* One large, one smaller offset under it — the same asymmetry the
+              section headers use, rather than two equal tiles. Both files are
+              4:3, so neither is cropped to make the pair line up. */}
           <Reveal className="lg:col-span-5">
-            <Photo slot={ABOUT_PHOTO} sizes="(min-width: 1024px) 38vw, 100vw" />
+            <div className="flex flex-col gap-4">
+              <Photo
+                slot={ABOUT_PHOTOS[0]}
+                sizes="(min-width: 1024px) 38vw, calc(100vw - 2.5rem)"
+              />
+              <div className="w-4/5 self-end sm:w-3/4">
+                <Photo
+                  slot={ABOUT_PHOTOS[1]}
+                  sizes="(min-width: 1024px) 29vw, calc(75vw - 2rem)"
+                />
+              </div>
+            </div>
           </Reveal>
 
           <div className="lg:col-span-7">

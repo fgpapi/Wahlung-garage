@@ -19,7 +19,6 @@ export function Faq() {
     <section aria-labelledby="faq-title" className="bg-surface py-20 sm:py-28">
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}

@@ -10,10 +10,14 @@
       name="description"
       content="Taller de enderezado y pintura, mecánica general, polarizado y tapicería en Aldea Germania, Tegucigalpa. Igualación de color por código de fábrica, garantía por escrito y presupuesto gratis por WhatsApp."
     />
-    <link rel="canonical" href="https://wahlung-garage.vercel.app/" />
+    <link rel="canonical" href="%SITE_URL%/" />
 
+    <!-- .ico first for browsers that ignore the SVG; anything modern prefers the
+         vector and skips the download. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- The hero still is the LCP element on mobile, where the video never loads. -->
     <link
@@ -28,7 +32,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Wahlung Garage" />
     <meta property="og:locale" content="es_HN" />
-    <meta property="og:url" content="https://wahlung-garage.vercel.app/" />
+    <meta property="og:url" content="%SITE_URL%/" />
     <meta
       property="og:title"
       content="Wahlung Garage | Enderezado, Pintura y Mecánica en Tegucigalpa"
@@ -37,7 +41,7 @@
       property="og:description"
       content="Enderezado y pintura con igualación por código de fábrica, mecánica general, polarizado y tapicería. Presupuesto gratis por WhatsApp y garantía por escrito."
     />
-    <meta property="og:image" content="https://wahlung-garage.vercel.app/og-image.jpg" />
+    <meta property="og:image" content="%SITE_URL%/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
@@ -54,7 +58,7 @@
       name="twitter:description"
       content="Enderezado y pintura con igualación por código de fábrica, mecánica general, polarizado y tapicería en Tegucigalpa."
     />
-    <meta name="twitter:image" content="https://wahlung-garage.vercel.app/og-image.jpg" />
+    <meta name="twitter:image" content="%SITE_URL%/og-image.jpg" />
 
     <!--
       Structured data. NOTE: the address, phones and hours are also defined in
@@ -65,12 +69,12 @@
       {
         "@context": "https://schema.org",
         "@type": ["AutoRepair", "LocalBusiness"],
-        "@id": "https://wahlung-garage.vercel.app/#business",
+        "@id": "%SITE_URL%/#business",
         "name": "Wahlung Garage",
         "description": "Taller de enderezado y pintura, mecánica general, polarizado y tapicería en Tegucigalpa, Honduras.",
-        "url": "https://wahlung-garage.vercel.app/",
-        "image": "https://wahlung-garage.vercel.app/og-image.jpg",
-        "logo": "https://wahlung-garage.vercel.app/logo.webp",
+        "url": "%SITE_URL%/",
+        "image": "%SITE_URL%/og-image.jpg",
+        "logo": "%SITE_URL%/logo.webp",
         "telephone": "+504 8825-0870",
         "priceRange": "$$",
         "currenciesAccepted": "HNL",
@@ -81,6 +85,12 @@
           "addressRegion": "Francisco Morazán",
           "addressCountry": "HN"
         },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 14.0246735,
+          "longitude": -87.2080765
+        },
+        "hasMap": "%MAP_LINK_URL%",
         "contactPoint": [
           {
             "@type": "ContactPoint",

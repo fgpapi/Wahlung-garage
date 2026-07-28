@@ -3,12 +3,23 @@
  * footer, contact section and JSON-LD all follow.
  */
 import { WHATSAPP_PRIMARY, WHATSAPP_SECONDARY } from '../lib/whatsapp';
+import { resolveSiteUrl } from '../lib/site-url';
+
+/**
+ * The site's own origin, with no trailing slash. Every absolute URL on the page
+ * derives from this — canonical, Open Graph, Twitter, JSON-LD, robots.txt and
+ * sitemap.xml — so the domain is configured in exactly one place.
+ *
+ * Set VITE_SITE_URL to override; otherwise DEFAULT_SITE_URL in lib/site-url.ts
+ * applies. index.html and the two crawler files are filled in at build time by
+ * the `site-urls` plugin in vite.config.ts, which reads the same resolver.
+ */
+export const SITE_URL = resolveSiteUrl(import.meta.env.VITE_SITE_URL);
 
 export const SITE = {
   name: 'Wahlung Garage',
   tagline: 'Mecánica & Pintura',
-  /** Update once the domain is live; used for canonical, Open Graph and JSON-LD. */
-  url: 'https://wahlung-garage.vercel.app',
+  url: SITE_URL,
   city: 'Tegucigalpa',
   country: 'Honduras',
 } as const;
@@ -81,10 +92,13 @@ export const CORPORATE_CLIENTS = [
 ] as const;
 
 /**
- * Google Maps embed for the shop, loaded only after the user activates the
- * facade. Replace the query with the exact pin once the shop claims its
- * Business Profile.
+ * The pin and the Maps URLs live in lib/geo.ts so vite.config.ts can read them
+ * without pulling in `import.meta.env`. Re-exported here so application code has
+ * a single import site for business facts.
  */
-export const MAP_QUERY = encodeURIComponent(ADDRESS.full);
-export const MAP_EMBED_URL = `https://www.google.com/maps?q=${MAP_QUERY}&output=embed`;
-export const MAP_LINK_URL = `https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`;
+export {
+  GEO,
+  MAP_DIRECTIONS_URL,
+  MAP_LINK_URL,
+  MAP_EMBED_URL,
+} from '../lib/geo';

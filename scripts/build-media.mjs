@@ -4,7 +4,8 @@
  * Run with `npm run assets:poster` after replacing media/hero.source.mp4. The
  * outputs are committed to git — Vercel does not run ffmpeg at deploy time.
  *
- *   public/hero.mp4          H.264, the only video shipped
+ *   public/hero.mp4          H.264 high, served at 768px and up
+ *   public/hero-mobile.mp4   H.264 baseline 720p, served below 768px
  *   public/hero-poster.jpg   frame 0, used as the <video poster> and desktop still
  *   public/hero-poster-800.jpg  the same frame for mobile, where the video never loads
  *
@@ -56,6 +57,29 @@ run('hero.mp4  (H.264 crf 30)', [
   resolve(OUT, 'hero.mp4'),
 ]);
 
+/**
+ * The phone variant, picked by `<source media="(max-width: 767px)">` in Hero.
+ * Baseline profile for the widest possible decoder support, and a tighter crf
+ * because a 9:16 crop of this footage is heavily overlaid anyway. crf 30 lands
+ * it below the desktop file — a "mobile" variant that weighed more would be
+ * pointless. Audio was already absent from the source; `-an` keeps it that way.
+ */
+run('hero-mobile.mp4  (720p H.264 baseline)', [
+  '-i', SOURCE,
+  '-an',
+  '-vf', 'scale=1280:720:force_original_aspect_ratio=decrease:flags=lanczos',
+  '-c:v', 'libx264',
+  '-profile:v', 'baseline',
+  '-level', '3.1',
+  '-crf', '30',
+  '-maxrate', '800k',
+  '-bufsize', '1600k',
+  '-preset', 'slow',
+  '-pix_fmt', 'yuv420p',
+  '-movflags', '+faststart',
+  resolve(OUT, 'hero-mobile.mp4'),
+]);
+
 run('hero-poster.jpg', [
   '-i', SOURCE,
   '-vf', `select=eq(n\\,0),${scale}`,
@@ -74,7 +98,7 @@ run('hero-poster-800.jpg', [
 
 const kb = (p) => `${(statSync(resolve(OUT, p)).size / 1024).toFixed(0)} KB`;
 console.log('\nWrote:');
-for (const f of ['hero.mp4', 'hero-poster.jpg', 'hero-poster-800.jpg']) {
+for (const f of ['hero.mp4', 'hero-mobile.mp4', 'hero-poster.jpg', 'hero-poster-800.jpg']) {
   console.log(`  public/${f.padEnd(22)} ${kb(f)}`);
 }
 console.log(`  (source was ${(statSync(SOURCE).size / 1024).toFixed(0)} KB)\n`);

@@ -39,6 +39,7 @@ if (!executablePath) {
 
 const VIEWPORTS = [
   { name: '360', width: 360, height: 780, mobile: true },
+  { name: '390', width: 390, height: 844, mobile: true },
   { name: '768', width: 768, height: 1024, mobile: true },
   { name: '1440', width: 1440, height: 900, mobile: false },
 ];
@@ -97,12 +98,29 @@ function collect() {
     }
   }
 
+  const v = document.querySelector('#inicio video');
+
   return {
     scrollWidth: de.scrollWidth,
     clientWidth: de.clientWidth,
     overflowing: overflowing.slice(0, 8),
     videoCount: document.querySelectorAll('video').length,
     posterImg: !!document.querySelector('img[src*="hero-poster"]'),
+    video: v && {
+      // muted + playsInline together are what make iOS Safari autoplay at all.
+      muted: v.muted,
+      playsInline: v.playsInline,
+      autoplay: v.autoplay,
+      loop: v.loop,
+      preload: v.preload,
+      hasPoster: !!v.getAttribute('poster'),
+      currentSrc: v.currentSrc.replace(location.origin, ''),
+      paused: v.paused,
+      advanced: v.currentTime > 0,
+      opacity: getComputedStyle(v).opacity,
+      objectFit: getComputedStyle(v).objectFit,
+      objectPosition: getComputedStyle(v).objectPosition,
+    },
     smallTargets: smallTargets.slice(0, 12),
     imagesMissingAlt,
     headingSkips,
@@ -174,11 +192,21 @@ for (const vp of VIEWPORTS) {
     }
   }
 
-  if (vp.width < 768) {
-    note(result.videoCount === 0, 'hero video NOT rendered below 768px');
-    note(result.posterImg, 'hero poster image rendered instead');
-  } else {
-    note(result.videoCount === 1, 'hero video rendered at >=768px');
+  const v = result.video;
+  note(result.videoCount === 1 && !!v, 'hero video rendered');
+  note(result.posterImg, 'hero poster image painted underneath (no black flash)');
+  if (v) {
+    const wantSrc = vp.width < 768 ? '/hero-mobile.mp4' : '/hero.mp4';
+    note(v.currentSrc === wantSrc, `serves ${wantSrc} (got ${v.currentSrc || 'nothing'})`);
+    note(v.muted && v.playsInline, 'muted + playsInline both present (iOS autoplay)');
+    note(v.autoplay && v.loop && v.preload === 'metadata', 'autoplay + loop + preload=metadata');
+    note(v.hasPoster, 'poster attribute set');
+    // Asserts that it autoplayed, not that it is playing right now: this runs
+    // after a full-page scroll, and Chrome pauses offscreen autoplaying video on
+    // mobile to save power. It resumes on its own when the hero comes back.
+    note(v.advanced, `autoplayed without interaction (currentTime moved past 0)`);
+    note(v.opacity === '1', `faded in on canplay (opacity ${v.opacity})`);
+    note(v.objectFit === 'cover', `object-fit cover, position ${v.objectPosition}`);
   }
 
   note(result.smallTargets.length === 0, `all touch targets >= 44x44`);

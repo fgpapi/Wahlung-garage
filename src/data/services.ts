@@ -13,15 +13,12 @@ export interface Service {
   icon: LucideIcon;
   /** Appended verbatim to the pre-filled WhatsApp message. */
   whatsappLabel: string;
-  /** Short mono label used in the section header. */
-  code: string;
 }
 
 export const SERVICES: readonly Service[] = [
   {
     id: 'enderezado-y-pintura',
     name: 'Enderezado y Pintura',
-    code: '01.1',
     summary: 'Reparación de golpes y pintura igualada con el código de fábrica.',
     body: 'Enderezamos la lámina, corregimos la estructura y pintamos en cabina cerrada. El color lo preparamos con el código de fábrica de su vehículo, no a ojo, para que el panel reparado no se note contra el resto de la carrocería.',
     bullets: [
@@ -36,7 +33,6 @@ export const SERVICES: readonly Service[] = [
   {
     id: 'mecanica-general',
     name: 'Mecánica General',
-    code: '01.2',
     summary: 'Diagnóstico con escáner, mantenimiento y reparación completa.',
     body: 'Atendemos el mantenimiento de rutina y las fallas que le dejan el carro parado. Escaneamos antes de destapar nada, para cobrarle la reparación que el vehículo necesita y no la que parece a simple vista.',
     bullets: [
@@ -51,7 +47,6 @@ export const SERVICES: readonly Service[] = [
   {
     id: 'polarizado',
     name: 'Polarizado',
-    code: '01.3',
     summary: 'Película para vidrios cortada a medida, con garantía escrita.',
     body: 'Instalamos película para vidrios con corte a medida para cada ventana. Antes de cortar le explicamos qué porcentaje puede llevar su vehículo, para que no tenga problemas en un retén.',
     bullets: [
@@ -66,7 +61,6 @@ export const SERVICES: readonly Service[] = [
   {
     id: 'tapiceria',
     name: 'Tapicería',
-    code: '01.4',
     summary: 'Forrado y restauración de asientos, cielo, timón y paneles.',
     body: 'Reparamos lo que el sol y el uso diario van dañando adentro. Forramos asientos completos, corregimos el cielo caído y restauramos timón, palanca y paneles en cuero o tela.',
     bullets: [

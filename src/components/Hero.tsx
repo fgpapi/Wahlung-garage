@@ -1,64 +1,84 @@
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Container } from './ui/Container';
 import { Button } from './ui/Button';
 import { WhatsAppCta } from './ui/WhatsAppCta';
 import { HERO } from '../data/copy';
-import { DESKTOP_QUERY, useMediaQuery, usePrefersReducedMotion } from '../lib/hooks';
+import { usePrefersReducedMotion } from '../lib/hooks';
+import { cn } from '../lib/cn';
 
 export function Hero() {
-  const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const reducedMotion = usePrefersReducedMotion();
+  const [videoReady, setVideoReady] = useState(false);
 
   /**
-   * Hard requirement, not an optimisation: below 768px and whenever reduced
-   * motion is requested, the <video> is never rendered, so the browser never
-   * requests the 456 KB file. Honduran mobile data is expensive. `useMediaQuery`
-   * reads matchMedia during the initial state, so a phone never briefly mounts it.
+   * The video now plays on phones too, on a 397 KB 720p variant picked by the
+   * <source media> query below. Reduced motion is still an absolute veto: the
+   * <video> is never rendered, so the browser never requests the file at all.
    */
-  const showVideo = isDesktop && !reducedMotion;
+  const showVideo = !reducedMotion;
 
   return (
     <section id="inicio" className="relative isolate min-h-[100svh] overflow-hidden bg-surface-invert">
       <div className="absolute inset-0 -z-10">
-        {showVideo ? (
+        {/* Painted first and always: the poster owns the first frame, so the
+            video can never flash black while it negotiates its first bytes.
+            The <video> fades in on top of it once it can actually play.
+            object-position holds the technician in frame at 9:16, where a
+            centred crop of this landscape footage would cut him out entirely. */}
+        <img
+          src="/hero-poster-800.jpg"
+          srcSet="/hero-poster-800.jpg 800w, /hero-poster.jpg 1600w"
+          sizes="100vw"
+          alt={HERO.posterAlt}
+          width={1600}
+          height={900}
+          fetchPriority="high"
+          decoding="async"
+          className="size-full object-cover object-[68%_50%] md:object-center"
+        />
+
+        {showVideo && (
           <video
             autoPlay
             muted
             loop
             playsInline
             preload="metadata"
-            poster="/hero-poster.jpg"
+            // Deliberately the 800px still, not the 1600px one: the <img> below
+            // already picked the 800 on a phone, so pointing the poster at the
+            // same file makes it one download instead of two (-95 KB on mobile).
+            // It is only ever on screen for the moment before canplay fires.
+            poster="/hero-poster-800.jpg"
             aria-hidden
             tabIndex={-1}
-            className="size-full object-cover"
+            onCanPlay={() => setVideoReady(true)}
+            className={cn(
+              'absolute inset-0 size-full object-cover object-[68%_50%] md:object-center',
+              'transition-opacity duration-700 ease-out',
+              videoReady ? 'opacity-100' : 'opacity-0',
+            )}
           >
+            {/* 720p, H.264 baseline, no audio track — 397 KB against the
+                456 KB desktop file, so a phone downloads less, not more. */}
+            <source media="(max-width: 767px)" src="/hero-mobile.mp4" type="video/mp4" />
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-        ) : (
-          <img
-            src="/hero-poster-800.jpg"
-            srcSet="/hero-poster-800.jpg 800w, /hero-poster.jpg 1600w"
-            sizes="100vw"
-            alt={HERO.posterAlt}
-            width={1600}
-            height={900}
-            fetchPriority="high"
-            decoding="async"
-            className="size-full object-cover"
-          />
         )}
 
         {/* Left-weighted scrim: the painter sits right of frame, so darkening the
-            left keeps the subject visible while guaranteeing legible copy. */}
+            left keeps the subject visible while guaranteeing legible copy. Held
+            flatter in portrait, where the crop puts mid-frame content on the left. */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-linear-to-r from-ink/95 via-ink/80 to-ink/35"
+          className="absolute inset-0 bg-linear-to-r from-ink/95 via-ink/78 to-ink/55 md:via-ink/80 md:to-ink/35"
         />
         {/* Floor and ceiling: the ceiling keeps the transparent header readable
-            over the bright booth walls. */}
+            over the bright booth walls. The floor runs deeper in portrait, where
+            the copy stack is taller and sits over more of the frame. */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-linear-to-t from-ink via-ink/55 via-45% to-transparent"
+          className="absolute inset-0 bg-linear-to-t from-ink via-ink/65 via-55% to-transparent md:via-ink/55 md:via-45%"
         />
         <div
           aria-hidden
@@ -95,14 +115,6 @@ export function Hero() {
               {HERO.secondaryCta}
             </Button>
           </div>
-        </div>
-
-        <div
-          aria-hidden
-          className="mt-10 hidden items-center gap-3 text-ink-invert-muted lg:flex"
-        >
-          <span className="type-eyebrow text-[0.625rem]">{HERO.scrollHint}</span>
-          <span className="h-px w-16 bg-line-invert-strong" />
         </div>
       </Container>
     </section>

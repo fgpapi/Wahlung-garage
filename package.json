@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "assets:media": "node scripts/build-media.mjs",
+    "assets:photos": "node scripts/build-photos.mjs",
+    "assets:icons": "node scripts/build-icons.mjs",
     "assets:logo": "powershell -ExecutionPolicy Bypass -File scripts/build-logo.ps1",
     "check:contrast": "node scripts/check-contrast.mjs",
     "audit": "node scripts/audit.mjs"
@@ -17,10 +19,12 @@
     "@fontsource-variable/archivo": "^5.2.5",
     "@fontsource/ibm-plex-mono": "^5.2.5",
     "@fontsource/ibm-plex-sans": "^5.2.5",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",

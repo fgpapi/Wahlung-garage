@@ -25,7 +25,6 @@ export function ServicesOverview() {
     >
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}
@@ -68,10 +67,7 @@ function ServiceCard({ service }: { service: Service }) {
         <Icon size={22} strokeWidth={1.5} />
       </span>
 
-      <div className="flex flex-col gap-2">
-        <span className="type-eyebrow text-[0.625rem] text-ink-subtle">{service.code}</span>
-        <h3 className="type-heading text-xl text-ink">{service.name}</h3>
-      </div>
+      <h3 className="type-heading text-xl text-ink">{service.name}</h3>
 
       <p className="text-sm leading-relaxed text-ink-muted">{service.summary}</p>
 
@@ -117,19 +113,20 @@ function ServiceDetail({ service, index }: { service: Service; index: number }) 
           <Reveal
             className={cn('lg:col-span-6', reversed && 'lg:order-2')}
           >
+            {/* Not 100vw: Container takes 1.25rem of padding a side on phones,
+                so declaring the full viewport over-asks for a rung. */}
             {photo ? (
-              <Photo slot={photo} sizes="(min-width: 1024px) 46vw, 100vw" />
+              <Photo slot={photo} sizes="(min-width: 1024px) 46vw, calc(100vw - 2.5rem)" />
             ) : null}
           </Reveal>
 
           <div className={cn('lg:col-span-6', reversed && 'lg:order-1')}>
             <Reveal>
-              <div className="flex items-center gap-4">
-                <span className="type-eyebrow text-brand-primary-ink">{service.code}</span>
-                <span aria-hidden className="h-px flex-1 bg-line-strong" />
-              </div>
+              {/* The rule stays as the section's opening mark now that the
+                  numeric code that sat beside it is gone. */}
+              <span aria-hidden className="block h-px w-full bg-line-strong" />
 
-              <h2 id={titleId} className="type-title mt-5 text-[clamp(1.6rem,3.4vw,2.5rem)] text-ink">
+              <h2 id={titleId} className="type-title mt-6 text-[clamp(1.6rem,3.4vw,2.5rem)] text-ink">
                 {service.name}
               </h2>
 

@@ -1,40 +1,50 @@
 /**
- * Every photo slot on the page. Nothing here is a real image yet — each slot
- * renders as a styled placeholder that states exactly which photo belongs in it.
+ * Every photo slot on the page.
+ *
+ * Slots with a `stem` render a real <picture>; slots without one still render
+ * the styled placeholder that states which shot belongs there.
  *
  * TO ADD A REAL PHOTO
  * -------------------
- * Drop the file in `public/fotos/`, then add three fields to its slot:
+ * 1. Drop the original in `source-images/` (originals are never touched again).
+ * 2. Add it to PHOTOS in `scripts/build-photos.mjs`, run `npm run assets:photos`.
+ * 3. Fill in the slot here from the line the script prints:
  *
- *     { id: 'pintura-cabina',
- *       caption: 'Foto: cabina de pintura — horizontal 4:3',
- *       alt: 'Técnico aplicando pintura ...',
- *       ratio: '4/3',
- *   +   src: '/fotos/pintura-cabina.jpg',
- *   +   width: 1600,
- *   +   height: 1200 }
+ *     { id: 'servicio-polarizado',
+ *       caption: 'L200 con polarizado instalado en todos los vidrios',
+ *       alt: 'Mitsubishi L200 blanca con los vidrios ...',
+ *       ratio: '16/9',
+ *   +   stem: '/images/servicios/polarizado-1',
+ *   +   widths: [640, 1024, 1599],
+ *   +   width: 1599,
+ *   +   height: 899 }
  *
- * The placeholder disappears and a lazy-loaded <img> takes its place. Because the
- * slot already reserves `ratio`, the layout does not move when the photo lands.
- * `width`/`height` must be the file's real pixel size so the browser can reserve
- * the box (Core Web Vitals: CLS).
+ * `width`/`height` must be the largest derivative's real pixel size. Every box on
+ * the page is reserved from those two numbers — the tile takes the shape of the
+ * photo, so nothing is ever cropped to fit and nothing shifts on load (CLS).
  */
 
+/** Only used to reserve a box for a slot that has no file yet. */
 export type PhotoRatio = '4/3' | '3/4' | '1/1' | '16/9' | '3/2';
 
 export interface PhotoSlot {
   id: string;
-  /** Shown on the placeholder. Name the shot precisely — this is the brief. */
+  /** Shown under the photo in the lightbox, and on the placeholder as the brief. */
   caption: string;
-  /** Alt text for the real photo. Also describes the placeholder to screen readers. */
+  /** Describes what is actually in the frame. Also read out for the placeholder. */
   alt: string;
-  /** Final aspect ratio. Held by the placeholder so nothing shifts on swap. */
-  ratio: PhotoRatio;
-  /** Path under /public. Set this to replace the placeholder with a real photo. */
-  src?: string;
-  /** Intrinsic pixel size of the file. Required whenever `src` is set. */
+  /** Path stem under /public. Derivatives are `${stem}-${w}.webp` and `.jpg`. */
+  stem?: string;
+  /** Generated widths, ascending. The largest is what the lightbox loads. */
+  widths?: readonly number[];
+  /**
+   * Intrinsic pixel size of the largest derivative. Required whenever `stem` is
+   * set: it drives both the `width`/`height` attributes and the reserved box.
+   */
   width?: number;
   height?: number;
+  /** Placeholder-only. Ignored once `width`/`height` are present. */
+  placeholderRatio?: PhotoRatio;
 }
 
 export const GALLERY_CATEGORIES = [
@@ -53,93 +63,109 @@ export interface GalleryItem extends PhotoSlot {
 }
 
 /**
- * The filterable grid. Ratios are deliberately mixed so the masonry reads as a
- * real gallery rather than a uniform 3x3 of stock images.
+ * The filterable grid. Ordered so the "Todos" view alternates orientations
+ * rather than stacking every portrait shot into one column of the masonry.
  */
 export const GALLERY_ITEMS: readonly GalleryItem[] = [
   {
-    id: 'pintura-cabina',
+    id: 'pintura-dmax-gris',
     category: 'pintura',
-    caption: 'Foto: cabina de pintura, aplicando base — horizontal 4:3',
-    alt: 'Técnico aplicando pintura base a un panel dentro de la cabina cerrada',
-    ratio: '4/3',
+    caption: 'D-Max gris entregada a flota corporativa',
+    alt: 'Isuzu D-Max gris terminada, estacionada junto a la flota de pickups blancas después del trabajo de pintura',
+    stem: '/images/galeria/pintura-1',
+    widths: [640, 1024, 1280],
+    width: 1280,
+    height: 720,
   },
   {
-    id: 'pintura-antes-guardafango',
-    category: 'pintura',
-    caption: 'Foto: guardafango abollado antes de reparar — vertical 3:4',
-    alt: 'Guardafango delantero con abolladura profunda antes de la reparación',
-    ratio: '3/4',
+    id: 'tapiceria-conductor-hilux',
+    category: 'tapiceria',
+    caption: 'Asiento de conductor reforrado en tela',
+    alt: 'Asiento del conductor de una Toyota Hilux reforrado en tela con patrón geométrico gris sobre negro',
+    stem: '/images/galeria/tapiceria-1',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
   },
   {
-    id: 'pintura-pulido',
-    category: 'pintura',
-    caption: 'Foto: pulido final de la carrocería — panorámica 16:9',
-    alt: 'Pulido final de la carrocería después de la pintura',
-    ratio: '16/9',
-  },
-  {
-    id: 'pintura-igualacion',
-    category: 'pintura',
-    caption: 'Foto: mezcla de color con el código de fábrica — cuadrada 1:1',
-    alt: 'Preparación de la mezcla de pintura según el código de color del vehículo',
-    ratio: '1/1',
-  },
-  {
-    id: 'mecanica-escaner',
+    id: 'mecanica-choque-frontal',
     category: 'mecanica',
-    caption: 'Foto: escaneo computarizado del motor — horizontal 4:3',
-    alt: 'Escáner automotriz conectado al puerto de diagnóstico del vehículo',
-    ratio: '4/3',
+    caption: 'Ingreso: choque frontal antes de presupuestar',
+    alt: 'Sedán rojo con el frente destruido por un choque, con el capó doblado, el faro roto y el radiador expuesto, recién ingresado al taller',
+    stem: '/images/galeria/mecanica-1',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
   },
   {
-    id: 'mecanica-suspension',
-    category: 'mecanica',
-    caption: 'Foto: vehículo en rampa, trabajo de suspensión — vertical 3:4',
-    alt: 'Vehículo levantado en rampa durante una reparación de suspensión',
-    ratio: '3/4',
-  },
-  {
-    id: 'mecanica-frenos',
-    category: 'mecanica',
-    caption: 'Foto: cambio de pastillas y discos de freno — cuadrada 1:1',
-    alt: 'Cambio de pastillas y discos de freno en el taller',
-    ratio: '1/1',
-  },
-  {
-    id: 'polarizado-instalacion',
+    id: 'polarizado-frontier-noche',
     category: 'polarizado',
-    caption: 'Foto: instalación de película en el parabrisas — horizontal 3:2',
-    alt: 'Instalación de película polarizada sobre el vidrio del vehículo',
-    ratio: '3/2',
+    caption: 'Frontier con polarizado terminado',
+    alt: 'Nissan Frontier plateada fotografiada de noche, con el polarizado ya instalado reflejando las luces del patio',
+    stem: '/images/galeria/polarizado-1',
+    widths: [640, 1024, 1600],
+    width: 1600,
+    height: 1200,
   },
   {
-    id: 'polarizado-terminado',
-    category: 'polarizado',
-    caption: 'Foto: vehículo terminado con polarizado — panorámica 16:9',
-    alt: 'Vehículo terminado mostrando el polarizado instalado en todos los vidrios',
-    ratio: '16/9',
+    id: 'pintura-dmax-blanca',
+    category: 'pintura',
+    caption: 'D-Max blanca lista para entrega',
+    alt: 'Isuzu D-Max blanca con placa JAB0537 recién pintada, estacionada entre otras unidades de la flota',
+    stem: '/images/galeria/pintura-2',
+    widths: [640, 1024, 1280],
+    width: 1280,
+    height: 720,
   },
   {
-    id: 'tapiceria-asientos',
+    id: 'tapiceria-copiloto-panel',
     category: 'tapiceria',
-    caption: 'Foto: asientos forrados en cuero — horizontal 4:3',
-    alt: 'Asientos delanteros recién forrados en cuero',
-    ratio: '4/3',
+    caption: 'Copiloto y panel de puerta terminados',
+    alt: 'Asiento del copiloto y panel de puerta reforrados, con la consola central y los portavasos ya montados',
+    stem: '/images/galeria/tapiceria-2',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
   },
   {
-    id: 'tapiceria-cielo',
-    category: 'tapiceria',
-    caption: 'Foto: cielo reparado antes y después — vertical 3:4',
-    alt: 'Cielo interior del vehículo reparado y reinstalado',
-    ratio: '3/4',
+    id: 'mecanica-patrulla-golpe',
+    category: 'mecanica',
+    caption: 'PN-375 con daño en el costado trasero',
+    alt: 'Pickup policial PN-375 con el costado trasero hundido y el parachoques desprendido, esperando enderezado',
+    stem: '/images/galeria/mecanica-2',
+    widths: [640, 1024, 1280],
+    width: 1280,
+    height: 720,
   },
   {
-    id: 'tapiceria-timon',
+    id: 'tapiceria-banca-trasera',
     category: 'tapiceria',
-    caption: 'Foto: timón restaurado en cuero — cuadrada 1:1',
-    alt: 'Timón restaurado y forrado en cuero con costura reforzada',
-    ratio: '1/1',
+    caption: 'Banca trasera reforrada y reinstalada',
+    alt: 'Banca trasera de doble cabina reforrada en tela con patrón, con los cinturones y las hebillas reinstalados',
+    stem: '/images/galeria/tapiceria-3',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
+  },
+  {
+    id: 'pintura-patrulla-entregada',
+    category: 'pintura',
+    caption: 'Unidad policial devuelta con pintura y rotulación completas',
+    alt: 'Pickup de la Policía Nacional en blanco y azul, ya pintada y rotulada, estacionada frente a la caseta de control',
+    stem: '/images/galeria/pintura-3',
+    widths: [640, 1024, 1280],
+    width: 1280,
+    height: 720,
+  },
+  {
+    id: 'tapiceria-costura-contraste',
+    category: 'tapiceria',
+    caption: 'Asientos delanteros con costura de contraste',
+    alt: 'Asiento delantero forrado en tela negra con costura blanca de contraste, con el segundo asiento al fondo',
+    stem: '/images/galeria/tapiceria-4',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
   },
 ] as const;
 
@@ -147,57 +173,94 @@ export const GALLERY_ITEMS: readonly GalleryItem[] = [
 export const SERVICE_PHOTOS: Record<string, PhotoSlot> = {
   'enderezado-y-pintura': {
     id: 'servicio-pintura',
-    caption: 'Foto: panel en cabina, pistola en mano — horizontal 3:2',
-    alt: 'Aplicación de pintura sobre un panel dentro de la cabina',
-    ratio: '3/2',
+    caption: 'Hilux doble cabina entregada después de enderezado y pintura',
+    alt: 'Toyota Hilux plateada recién entregada, estacionada a la entrada del taller junto al portón, con el capó y los costados ya pulidos',
+    stem: '/images/servicios/pintura-1',
+    widths: [640, 960],
+    width: 960,
+    height: 1280,
   },
   'mecanica-general': {
     id: 'servicio-mecanica',
-    caption: 'Foto: motor abierto durante el diagnóstico — horizontal 3:2',
-    alt: 'Motor abierto durante una revisión de diagnóstico',
-    ratio: '3/2',
+    caption: 'Frente desarmado para trabajar radiador y soportes',
+    alt: 'Pickup dentro del taller con el frente desarmado: parachoques y faros fuera, radiador e intercooler a la vista y el parabrisas enmascarado con cinta',
+    stem: '/images/servicios/mecanica-general',
+    widths: [640, 1024, 1599],
+    width: 1599,
+    height: 899,
   },
   polarizado: {
     id: 'servicio-polarizado',
-    caption: 'Foto: corte de película a medida — horizontal 3:2',
-    alt: 'Corte a medida de la película polarizada sobre el vidrio',
-    ratio: '3/2',
+    caption: 'L200 con polarizado instalado en todos los vidrios',
+    alt: 'Mitsubishi L200 blanca con los vidrios laterales y el parabrisas ya polarizados, estacionada en el patio del taller',
+    stem: '/images/servicios/polarizado-1',
+    widths: [640, 1024, 1599],
+    width: 1599,
+    height: 899,
   },
   tapiceria: {
     id: 'servicio-tapiceria',
-    caption: 'Foto: costura de tapicería en proceso — horizontal 3:2',
-    alt: 'Trabajo de costura sobre la tapicería de un asiento',
-    ratio: '3/2',
+    caption: 'Cabina de NP300 con los asientos delanteros reforrados',
+    alt: 'Interior de una Nissan NP300 con el asiento del conductor, el volante y la palanca de cambios, forrados en tela gris y negra',
+    stem: '/images/servicios/tapiceria-1',
+    widths: [640, 1024, 1200],
+    width: 1200,
+    height: 1600,
   },
 };
 
 /**
- * The before/after comparator. Both photos must be shot from the same position,
- * same focal length and same lighting, or the slider reveals the mismatch rather
- * than the repair.
+ * The before/after comparator: the same Mazda 3, same rear three-quarter angle.
+ * Both files are published at exactly 1600x1204 — `MUST_MATCH` in
+ * scripts/build-photos.mjs fails the build if that ever stops being true, because
+ * a slider whose two halves are different shapes shifts the framing as it moves.
  */
 export const COMPARISON: { before: PhotoSlot; after: PhotoSlot } = {
   before: {
     id: 'comparador-antes',
-    caption: 'Foto ANTES: puerta golpeada, mismo ángulo — panorámica 16:9',
-    alt: 'Puerta lateral con golpe y pintura dañada antes de la reparación',
-    ratio: '16/9',
+    caption: 'Antes: costado trasero golpeado y pintura opaca',
+    alt: 'Mazda 3 hatchback cubierto de polvo de lijado, con la pintura opaca y el costado y el parachoques traseros golpeados, sobre la grava del taller',
+    stem: '/images/comparador/antes',
+    widths: [640, 1024, 1600],
+    width: 1600,
+    height: 1204,
   },
   after: {
     id: 'comparador-despues',
-    caption: 'Foto DESPUÉS: misma puerta reparada y pintada — panorámica 16:9',
-    alt: 'La misma puerta lateral ya enderezada, pintada y pulida',
-    ratio: '16/9',
+    caption: 'Después: el mismo Mazda 3 pintado y pulido',
+    alt: 'El mismo Mazda 3 hatchback ya pintado en plata metálico y pulido, con el costado y el parachoques traseros corregidos, tomado desde el mismo ángulo',
+    stem: '/images/comparador/despues',
+    widths: [640, 1024, 1600],
+    width: 1600,
+    height: 1204,
   },
 };
 
-/** Shop photo used beside the "Nosotros" copy. */
-export const ABOUT_PHOTO: PhotoSlot = {
-  id: 'nosotros-taller',
-  caption: 'Foto: fachada o interior del taller con el equipo — horizontal 4:3',
-  alt: 'Instalaciones de Wahlung Garage en Aldea Germania, Tegucigalpa',
-  ratio: '4/3',
-};
+/**
+ * The shop itself, beside the "Un taller, no una agencia" copy. Both are 4:3
+ * landscape, so the section pairs them as one large plus one offset smaller
+ * rather than as two equal squares.
+ */
+export const ABOUT_PHOTOS: readonly PhotoSlot[] = [
+  {
+    id: 'nosotros-predio',
+    caption: 'El predio, sobre la calle principal de Aldea Germania',
+    alt: 'Terreno del taller delimitado por un muro de piedra y ladrillo, con los medidores eléctricos a un costado y un edificio de dos niveles con portones negros al fondo',
+    stem: '/images/nosotros/local-1',
+    widths: [640, 1024, 1600],
+    width: 1600,
+    height: 1200,
+  },
+  {
+    id: 'nosotros-patio',
+    caption: 'El patio de maniobras y la nave de trabajo',
+    alt: 'Patio de concreto del taller con la nave de lámina abierta a un costado, los portones de servicio al fondo y el cerro detrás',
+    stem: '/images/nosotros/local-2',
+    widths: [640, 1024, 1600],
+    width: 1600,
+    height: 1200,
+  },
+] as const;
 
 /** Maps a ratio token to the CSS `aspect-ratio` value. */
 export const RATIO_CSS: Record<PhotoRatio, string> = {

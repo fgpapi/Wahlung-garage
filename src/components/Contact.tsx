@@ -4,7 +4,14 @@ import { Container } from './ui/Container';
 import { SectionHeader } from './ui/SectionHeader';
 import { Button } from './ui/Button';
 import { WhatsAppCta } from './ui/WhatsAppCta';
-import { ADDRESS, HOURS, MAP_EMBED_URL, MAP_LINK_URL, PHONES } from '../data/site';
+import {
+  ADDRESS,
+  HOURS,
+  MAP_DIRECTIONS_URL,
+  MAP_EMBED_URL,
+  MAP_LINK_URL,
+  PHONES,
+} from '../data/site';
 import { CONTACT, HERO, SECTIONS } from '../data/copy';
 import { formatPhone, telHref } from '../lib/whatsapp';
 
@@ -20,7 +27,6 @@ export function Contact() {
     >
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}
@@ -67,8 +73,10 @@ export function Contact() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <WhatsAppCta size="lg">{HERO.primaryCta}</WhatsAppCta>
+              {/* Directions, not just the pin: from a phone this opens Maps
+                  already routing from wherever the visitor is standing. */}
               <Button
-                href={MAP_LINK_URL}
+                href={MAP_DIRECTIONS_URL}
                 target="_blank"
                 variant="outline-invert"
                 size="lg"
@@ -122,13 +130,25 @@ function MapFacade() {
 
   if (loaded) {
     return (
-      <iframe
-        src={MAP_EMBED_URL}
-        title={CONTACT.mapIframeTitle}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        className="aspect-4/3 w-full border border-ink-invert/25 lg:aspect-16/10"
-      />
+      <div className="flex flex-col gap-3">
+        <iframe
+          src={MAP_EMBED_URL}
+          title={CONTACT.mapIframeTitle}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="aspect-4/3 w-full border border-ink-invert/25 lg:aspect-16/10"
+        />
+        {/* An embedded map is awkward to pan on a phone, so give the pin its own
+            way out to the real Maps app. */}
+        <a
+          href={MAP_LINK_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="type-eyebrow inline-flex min-h-11 items-center text-[0.625rem] text-brand-primary underline-offset-4 hover:underline"
+        >
+          {CONTACT.mapOpenExternal}
+        </a>
+      </div>
     );
   }
 

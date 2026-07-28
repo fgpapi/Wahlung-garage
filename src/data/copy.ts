@@ -10,8 +10,7 @@ export const HERO = {
     'Enderezado, pintura, mecánica, polarizado y tapicería en Aldea Germania. Le cotizamos por WhatsApp el mismo día y cada trabajo sale con garantía por escrito.',
   primaryCta: 'Cotiza ya por WhatsApp',
   secondaryCta: 'Ver servicios',
-  scrollHint: 'Desliza',
-  /** Alt text for the still shown in place of the video on mobile. */
+  /** Alt text for the still shown in place of the video under reduced motion. */
   posterAlt:
     'Técnico de Wahlung Garage aplicando pintura a un vehículo dentro de la cabina cerrada',
 } as const;
@@ -20,37 +19,29 @@ export const TRUST_BAR = {
   label: 'Empresas que confían en nosotros',
 } as const;
 
-/**
- * Section headers. The numbering is the spine of the layout: it runs 01 through
- * 09 down the page and the four service sections take 01.1–01.4 beneath 01.
- */
+/** Section headers: eyebrow, title and lede for each block down the page. */
 export const SECTIONS = {
   servicios: {
-    number: '01',
     eyebrow: 'Servicios',
     title: 'Cuatro trabajos, hechos completos',
     lede: 'No subcontratamos. El enderezado, la pintura, la mecánica, el polarizado y la tapicería se hacen aquí mismo, con el mismo responsable de principio a fin.',
   },
   beneficios: {
-    number: '02',
     eyebrow: 'Por qué aquí',
     title: 'Lo que le garantizamos',
     lede: 'Cuatro compromisos concretos, no promesas generales.',
   },
   proceso: {
-    number: '03',
     eyebrow: 'Proceso',
     title: 'De la foto a la entrega',
     lede: 'Cuatro pasos. Usted sabe en qué va su vehículo en cada uno.',
   },
   galeria: {
-    number: '04',
     eyebrow: 'Galería',
     title: 'Trabajos del taller',
     lede: 'Filtre por tipo de trabajo. Toque cualquier imagen para verla completa.',
   },
   comparador: {
-    number: '05',
     eyebrow: 'Antes y después',
     title: 'Arrastre y compare',
     lede: 'La misma puerta, el mismo ángulo y la misma luz. Mueva el control para ver el trabajo completo.',
@@ -62,7 +53,6 @@ export const SECTIONS = {
     sliderLabel: 'Comparador de antes y después',
   },
   nosotros: {
-    number: '06',
     eyebrow: 'Nosotros',
     title: 'Un taller, no una agencia',
     lede: 'Wahlung Garage trabaja en Aldea Germania, sobre la calle principal, atrás de Economuebles.',
@@ -77,19 +67,16 @@ export const SECTIONS = {
     ],
   },
   testimonios: {
-    number: '07',
     eyebrow: 'Clientes',
     title: 'Lo que dicen',
     lede: 'Comentarios de clientes del taller.',
   },
   faq: {
-    number: '08',
     eyebrow: 'Preguntas',
     title: 'Lo que más nos preguntan',
     lede: 'Si su duda no está aquí, escríbanos por WhatsApp y se la respondemos.',
   },
   contacto: {
-    number: '09',
     eyebrow: 'Contacto',
     title: 'Dónde estamos',
     lede: 'Sobre la calle principal de Aldea Germania, atrás de Economuebles. Abierto todos los días.',
@@ -131,6 +118,7 @@ export const CONTACT = {
   mapFacadeBody: 'El mapa se carga solo cuando usted lo pide, para no gastarle datos.',
   mapFacadeCta: 'Cargar el mapa',
   mapIframeTitle: 'Mapa de la ubicación de Wahlung Garage',
+  mapOpenExternal: 'Abrir en Google Maps',
 } as const;
 
 export const FLOATING_CTA = {

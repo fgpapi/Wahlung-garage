@@ -94,11 +94,14 @@ export function Lightbox({ items, index, onClose, onNavigate }: LightboxProps) {
 
           <figure className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
             <div className="flex max-h-full w-full max-w-4xl items-center justify-center">
-              <Photo slot={item} priority className="max-h-[64vh] object-contain" />
+              {/* fit is a prop, not a class: `cn` has no tailwind-merge and the
+                  stylesheet emits object-cover after object-contain, so passing
+                  it through className used to lose and crop the full-size view. */}
+              <Photo slot={item} priority full fit="contain" className="max-h-[64vh] w-auto" />
             </div>
             {/* Only once a real photo replaces the placeholder — the placeholder
                 already prints its own caption inside the frame. */}
-            {item.src && (
+            {item.stem && (
               <figcaption className="max-w-[60ch] text-center font-mono text-xs text-ink-invert-muted">
                 {item.caption}
               </figcaption>

@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://wahlung-garage.vercel.app/sitemap.xml

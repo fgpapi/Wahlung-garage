@@ -38,7 +38,6 @@ export function Gallery() {
     >
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}
@@ -89,7 +88,7 @@ export function Gallery() {
                     visible caption and alt, so the name contains the visible
                     text (WCAG 2.5.3) instead of replacing it. */}
                 <span className="sr-only">{`${GALLERY.enlargePrefix}: `}</span>
-                <Photo slot={item} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 92vw" />
+                <Photo slot={item} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, calc(100vw - 2.5rem)" />
 
                 <span
                   aria-hidden

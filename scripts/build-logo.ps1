@@ -11,10 +11,9 @@
 # Outputs (committed to git):
 #   public/logo.png              full lockup   - light backgrounds only (navy wordmark)
 #   public/logo-mark.png         emblem only   - safe on light and dark
-#   public/apple-touch-icon.png  180x180
-#   public/og-image.jpg          1200x630 social card
 #
-# Requires public/hero-poster.jpg, so run scripts/build-media.mjs first.
+# apple-touch-icon.png, the favicon set and og-image.jpg come from
+# scripts/build-icons.mjs instead -- run `npm run assets:icons` after this.
 
 Add-Type -AssemblyName System.Drawing
 
@@ -180,87 +179,21 @@ $full.Dispose()
 $em = [Knockout]::Bounds($buf, $w, $splitY, $stride, 8)
 $mark = Export-Scaled $em[0] $em[1] $em[2] $em[3] 360 (Join-Path $out "logo-mark.png")
 
-# --- apple-touch-icon: emblem centred on the brand near-black -------------------
-$ink = [System.Drawing.Color]::FromArgb(255, 10, 12, 16)
-$touch = New-Object System.Drawing.Bitmap(180, 180, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$gt = New-HqGraphics $touch
-$gt.Clear($ink)
-$mw = 156; $mh = [int][Math]::Round($mark.Height * $mw / $mark.Width)
-$gt.DrawImage($mark, [int]((180 - $mw) / 2), [int]((180 - $mh) / 2), $mw, $mh)
-$gt.Dispose()
-$touch.Save((Join-Path $out "apple-touch-icon.png"), [System.Drawing.Imaging.ImageFormat]::Png)
-Write-Host ("  apple-touch-icon.png  180x180  {0} KB" -f [int]((Get-Item (Join-Path $out "apple-touch-icon.png")).Length / 1KB))
-$touch.Dispose()
-
-# --- og-image: darkened hero frame + emblem + wordmark --------------------------
-$posterPath = Join-Path $out "hero-poster.jpg"
-if (-not (Test-Path $posterPath)) { throw "Missing $posterPath - run scripts/build-media.mjs first." }
-
-$OG_W = 1200; $OG_H = 630
-$og = New-Object System.Drawing.Bitmap($OG_W, $OG_H, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$go = New-HqGraphics $og
-$poster = New-Object System.Drawing.Bitmap($posterPath)
-# Cover-fit the 16:9 poster into the 1.90:1 card.
-$sc = [Math]::Max($OG_W / $poster.Width, $OG_H / $poster.Height)
-$pw = [int][Math]::Round($poster.Width * $sc); $ph = [int][Math]::Round($poster.Height * $sc)
-$go.DrawImage($poster, [int](($OG_W - $pw) / 2), [int](($OG_H - $ph) / 2), $pw, $ph)
-$poster.Dispose()
-
-# Same left-weighted scrim the hero uses, so the card matches the page.
-$gradRect = New-Object System.Drawing.Rectangle(0, 0, $OG_W, $OG_H)
-$grad = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-  $gradRect,
-  [System.Drawing.Color]::FromArgb(245, 10, 12, 16),
-  [System.Drawing.Color]::FromArgb(110, 10, 12, 16),
-  [System.Drawing.Drawing2D.LinearGradientMode]::Horizontal)
-$go.FillRectangle($grad, $gradRect)
-$grad.Dispose()
-
-$orange = [System.Drawing.Color]::FromArgb(255, 255, 102, 0)
-$go.FillRectangle((New-Object System.Drawing.SolidBrush($orange)), 0, 0, 14, $OG_H)
-
-$ox = 72
-$ogMarkW = 300; $ogMarkH = [int][Math]::Round($mark.Height * $ogMarkW / $mark.Width)
-$go.DrawImage($mark, $ox, 96, $ogMarkW, $ogMarkH)
-
-# Arial Black stands in for Archivo here; the web page itself self-hosts Archivo.
-$fTitle = New-Object System.Drawing.Font("Arial Black", 58, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
-$fSub   = New-Object System.Drawing.Font("Segoe UI", 27, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
-$fMeta  = New-Object System.Drawing.Font("Segoe UI", 23, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
-$white  = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
-$muted  = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(255, 205, 212, 222))
-$obrush = New-Object System.Drawing.SolidBrush($orange)
-
-# Built from codepoints: this file is UTF-8 and Windows PowerShell 5.1 would otherwise
-# mangle the accented characters and the middot.
-$aa = [char]0x00E1; $ii = [char]0x00ED; $dot = [char]0x00B7
-$services = "Enderezado y pintura $dot Mec${aa}nica $dot Polarizado $dot Tapicer${ii}a"
-
-$ty = 96 + $ogMarkH + 34
-$go.DrawString("WAHLUNG GARAGE", $fTitle, $white, $ox, $ty)
-$go.FillRectangle($obrush, $ox, $ty + 78, 92, 6)
-$go.DrawString($services, $fSub, $muted, $ox, $ty + 104)
-$go.DrawString("TEGUCIGALPA, HONDURAS", $fMeta, $obrush, $ox, $ty + 150)
-
-$go.Dispose()
-
-$enc = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq 'image/jpeg' }
-$encParams = New-Object System.Drawing.Imaging.EncoderParameters(1)
-$encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, 88L)
-$og.Save((Join-Path $out "og-image.jpg"), $enc, $encParams)
-Write-Host ("  og-image.jpg  1200x630  {0} KB" -f [int]((Get-Item (Join-Path $out "og-image.jpg")).Length / 1KB))
-
-$og.Dispose(); $mark.Dispose(); $argb.Dispose()
+# apple-touch-icon.png and og-image.jpg used to be built here. They are now
+# produced by scripts/build-icons.mjs (npm run assets:icons): every icon is the
+# "W" mark so the tab, iOS and Android all match, and the og card is laid out to
+# survive WhatsApp centre-cropping it to a square. Do not re-add them here --
+# two writers for one file means whichever script ran last silently wins.
+$mark.Dispose(); $argb.Dispose()
 
 # --- PNG -> WebP ---------------------------------------------------------------
 # A 640px PNG of this illustration is 403 KB, which alone would sink the mobile
 # performance budget. Lossy WebP at q88 lands at 111 KB with no visible edge halos.
-# apple-touch-icon.png stays a PNG because iOS requires it.
 $ffmpeg = Join-Path $root "node_modules\ffmpeg-static\ffmpeg.exe"
 if (-not (Test-Path $ffmpeg)) { throw "Missing ffmpeg-static - run npm install first." }
 
-# logo-mark is exported at 360px so the OG card and touch icon have pixels to
-# work with, but the header and footer only ever display it around 66px CSS wide.
+# logo-mark is exported at 360px so the OG card has pixels to work with, but the
+# header and footer only ever display it around 66px CSS wide.
 # Shipping 360px there wasted bandwidth, so the web copy is scaled to 200px --
 # still 3x for the largest rendered size.
 $WEB_WIDTHS = @{ "logo" = 0; "logo-mark" = 200 }

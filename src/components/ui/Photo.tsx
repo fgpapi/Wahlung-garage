@@ -10,6 +10,20 @@ interface PhotoProps {
   /** Responsive hint for the real <img>. */
   sizes?: string | undefined;
   /**
+   * Skips the srcset and loads the largest derivative outright. The lightbox
+   * needs this: with a srcset the browser is free to reuse the thumbnail it
+   * already has in cache, which is exactly what "ver la imagen completa" is not.
+   */
+  full?: boolean;
+  /**
+   * How the image sits in its box. Passed as a prop rather than through
+   * `className` on purpose: `cn` is a plain join with no tailwind-merge, and
+   * `object-cover` is emitted after `object-contain` in the stylesheet, so a
+   * caller-supplied `object-contain` silently lost and the image was cropped.
+   * Exactly one object-fit utility is emitted here.
+   */
+  fit?: 'cover' | 'contain';
+  /**
    * Where the placeholder's caption sits. The comparator stacks two placeholders
    * and clips one of them, so centring both would slice a caption in half and
    * read as broken. Has no effect once a real photo is set.
@@ -23,43 +37,64 @@ const ALIGN_CLASS: Record<'center' | 'left' | 'right', string> = {
   right: 'items-end text-right',
 };
 
+const FIT_CLASS = { cover: 'object-cover', contain: 'object-contain' } as const;
+
 /**
- * Renders a photo slot: a real <img> once `slot.src` is set, and until then a
- * placeholder that names the shot that belongs there.
+ * Renders a photo slot: a real <picture> once `slot.stem` is set, and until then
+ * a placeholder that names the shot that belongs there.
  *
- * Both branches reserve the same `aspect-ratio`, so dropping in a real photo
- * cannot shift the layout (Core Web Vitals: CLS).
+ * The box is reserved from the photo's own intrinsic pixel size, never from a
+ * hand-written ratio, so `object-cover` has nothing left to crop and the layout
+ * cannot move when the file lands (Core Web Vitals: CLS).
  */
 export function Photo({
   slot,
   className,
   priority = false,
   sizes,
+  full = false,
+  fit = 'cover',
   align = 'center',
 }: PhotoProps) {
-  const aspectRatio = RATIO_CSS[slot.ratio];
+  if (slot.stem && slot.widths?.length && slot.width && slot.height) {
+    const { stem, widths, width, height } = slot;
+    const largest = widths[widths.length - 1];
+    const rungs = full ? [largest] : widths;
 
-  if (slot.src) {
     return (
-      <img
-        src={slot.src}
-        alt={slot.alt}
-        width={slot.width}
-        height={slot.height}
-        sizes={sizes}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
-        // fetchPriority is a real attribute; React 19 passes it through lowercase.
-        fetchPriority={priority ? 'high' : 'auto'}
-        className={cn('h-full w-full bg-surface-raised object-cover', className)}
-        style={{ aspectRatio }}
-      />
+      <picture className="contents">
+        <source
+          type="image/webp"
+          sizes={full ? undefined : sizes}
+          srcSet={rungs.map((w) => `${stem}-${w}.webp ${w}w`).join(', ')}
+        />
+        <img
+          src={`${stem}-${largest}.jpg`}
+          srcSet={rungs.map((w) => `${stem}-${w}.jpg ${w}w`).join(', ')}
+          sizes={full ? undefined : sizes}
+          alt={slot.alt}
+          width={width}
+          height={height}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          // fetchPriority is a real attribute; React 19 passes it through lowercase.
+          fetchPriority={priority ? 'high' : 'auto'}
+          className={cn('h-full w-full bg-surface-raised', FIT_CLASS[fit], className)}
+          // Straight from the file's own pixels — the tile is whatever shape the
+          // photo is, rather than the photo being cut to fit the tile.
+          style={{ aspectRatio: `${width} / ${height}` }}
+        />
+      </picture>
     );
   }
 
+  // No file yet: the placeholder still has to reserve a box, and the only ratio
+  // available is the one the brief asks the photographer for.
+  const ratio = slot.placeholderRatio ?? '4/3';
+
   return (
     <div
-      style={{ aspectRatio }}
+      style={{ aspectRatio: RATIO_CSS[ratio] }}
       className={cn(
         'registration-frame texture-diagonal relative flex w-full flex-col',
         'justify-center gap-4 overflow-hidden bg-surface-raised px-6 py-8',
@@ -86,7 +121,7 @@ export function Photo({
           assistive tech without cluttering the visual placeholder. */}
       <span className="sr-only">{slot.alt}</span>
       <span className="type-eyebrow absolute right-4 bottom-3 text-[0.625rem] text-ink-invert-muted">
-        {slot.ratio}
+        {ratio}
       </span>
     </div>
   );

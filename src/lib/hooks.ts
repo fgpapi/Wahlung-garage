@@ -25,12 +25,6 @@ export function usePrefersReducedMotion(): boolean {
   return useMediaQuery('(prefers-reduced-motion: reduce)');
 }
 
-/**
- * The hero video is skipped entirely below this width. Honduran mobile data is
- * expensive, so the poster image is the whole experience on a phone.
- */
-export const DESKTOP_QUERY = '(min-width: 768px)';
-
 /** Locks body scrolling while a modal or the mobile menu is open. */
 export function useScrollLock(locked: boolean): void {
   useEffect(() => {

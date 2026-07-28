@@ -96,7 +96,6 @@ export function BeforeAfter() {
     >
       <Container>
         <SectionHeader
-          number={meta.number}
           eyebrow={meta.eyebrow}
           title={meta.title}
           lede={meta.lede}

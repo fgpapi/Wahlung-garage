@@ -52,6 +52,18 @@ export const SECTIONS = {
     /** Accessible name for the slider handle. */
     sliderLabel: 'Comparador de antes y después',
   },
+  /**
+   * The second before/after. One entry shot against three finished angles, so it
+   * is a labelled layout rather than a slider — the tomas are not from the same
+   * point and no handle could line them up.
+   */
+  comparador2: {
+    eyebrow: 'Otro caso',
+    title: 'Cómo entró y cómo salió',
+    lede: 'Este Honda Civic entró con todo el frente destruido y salió completo. A la izquierda, el día que llegó; a la derecha, el trabajo terminado desde tres ángulos.',
+    beforeLabel: 'Antes',
+    afterLabel: 'Después',
+  },
   nosotros: {
     eyebrow: 'Nosotros',
     title: 'Un taller, no una agencia',
@@ -113,6 +125,7 @@ export const CONTACT = {
   addressLabel: 'Dirección',
   hoursLabel: 'Horario',
   phonesLabel: 'Teléfonos',
+  emailLabel: 'Correo',
   mapCta: 'Cómo llegar',
   mapFacadeTitle: 'Ver el taller en el mapa',
   mapFacadeBody: 'El mapa se carga solo cuando usted lo pide, para no gastarle datos.',

@@ -29,8 +29,8 @@ export const BENEFITS: readonly Benefit[] = [
   },
   {
     id: 'pagos',
-    title: 'Planes de pago',
-    body: 'En trabajos mayores acordamos el pago por etapas: un adelanto para materiales y el resto contra entrega. Sin financiera de por medio y sin intereses.',
+    title: 'Crédito de 15 a 30 días',
+    body: 'Manejamos crédito de 15 a 30 días para clientes aprobados. Usted retira su vehículo el día de la entrega y cancela dentro del plazo que acordemos.',
     icon: HandCoins,
   },
 ] as const;

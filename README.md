@@ -302,19 +302,33 @@ Resultado de la última corrida completa:
 
 | Medida | Resultado |
 |---|---|
-| Lighthouse — Rendimiento (celular) | **93** |
+| Lighthouse — Rendimiento (celular) | **89–90** |
 | Lighthouse — Accesibilidad | **100** |
 | Lighthouse — Buenas prácticas | **100** |
 | Lighthouse — SEO | **100** |
-| Largest Contentful Paint | 2.7 s |
-| Total Blocking Time | 50 ms |
+| Largest Contentful Paint | 3.18 – 3.20 s |
+| Total Blocking Time | 82 – 101 ms |
 | Cambio de diseño acumulado (CLS) | **0.001** |
-| `npm run audit` | 54 verificaciones, 0 fallas |
-| `npm run check:contrast` | 21 pares, todos pasan |
+| `npm run audit` | 92 verificaciones, 0 fallas |
+| `npm run check:contrast` | 21 pares + 3 sobre la foto de fondo, todos pasan |
 | `npm run build` | Sin errores de TypeScript |
 
-Medido sobre la compilación de producción (`npm run preview`), con Chrome en modo
-celular y red simulada.
+Medido el **14 de agosto de 2026** con **Lighthouse 12.8.2** sobre
+**HeadlessChrome 151**, contra la compilación de producción (`npm run preview`),
+en modo celular con red simulada (`--throttling-method=simulate`).
+
+Los rangos son de tres corridas seguidas, no de una. El estrangulamiento simulado
+de Lighthouse varía lo suficiente entre corridas como para que un solo número no
+signifique nada: una diferencia de dos o tres puntos de rendimiento, o de 30 ms
+de TBT, es ruido y no una regresión. Compare rangos contra rangos, y siempre
+vuelva a medir la base en la misma máquina y con la misma versión de Lighthouse
+antes de concluir que algo empeoró — una tabla anterior de este archivo decía
+93 / 2.7 s / 50 ms, y esos números no se reproducen aquí ni siquiera en el commit
+en que se escribieron.
+
+El elemento LCP es el párrafo de apoyo del hero: texto, no imagen. Toda foto de
+la página carga con `loading="lazy"` por debajo del pliegue, así que agregar
+secciones con fotos no mueve el LCP.
 
 ---
 

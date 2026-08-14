@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Clock, MapPin, Navigation, Phone } from 'lucide-react';
+import { Clock, Mail, MapPin, Navigation, Phone } from 'lucide-react';
 import { Container } from './ui/Container';
 import { SectionHeader } from './ui/SectionHeader';
 import { Button } from './ui/Button';
 import { WhatsAppCta } from './ui/WhatsAppCta';
 import {
   ADDRESS,
+  EMAIL,
   HOURS,
   MAP_DIRECTIONS_URL,
   MAP_EMBED_URL,
   MAP_LINK_URL,
   PHONES,
+  mailtoHref,
 } from '../data/site';
 import { CONTACT, HERO, SECTIONS } from '../data/copy';
 import { formatPhone, telHref } from '../lib/whatsapp';
@@ -69,6 +71,21 @@ export function Contact() {
                   </li>
                 ))}
               </ul>
+            </InfoBlock>
+
+            {/* Same row shape as a phone: one tap target, the address in mono at
+                the same optical size. Steps down a notch below `sm` because
+                wahlunggarage@gmail.com is 23 characters and would otherwise run
+                past the 44px icon gutter on a 360px screen. */}
+            <InfoBlock icon={Mail} label={CONTACT.emailLabel}>
+              <a
+                href={mailtoHref()}
+                className="inline-flex min-h-11 flex-col justify-center transition-colors hover:text-brand-primary"
+              >
+                <span className="font-mono text-[0.9375rem] break-all text-ink-invert sm:text-lg">
+                  {EMAIL}
+                </span>
+              </a>
             </InfoBlock>
 
             <div className="flex flex-col gap-3 sm:flex-row">

@@ -14,6 +14,10 @@
  * Source filenames carry spaces, accents and inconsistent casing, so the mapping
  * from original to slug is explicit rather than derived — a rename upstream
  * should fail loudly here instead of silently dropping a photo.
+ *
+ * Originals are normally JPEG straight off a phone. One (`carroantes.webp`) only
+ * ever reached us as a WebP, so the size reader dispatches on the file's magic
+ * bytes rather than assuming a JPEG and throwing on the SOF scan.
  */
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, existsSync, statSync } from 'node:fs';
@@ -52,9 +56,18 @@ const PHOTOS = [
   ['imagen antes.jpeg', 'comparador', 'antes'],
   ['imagen despues.jpeg', 'comparador', 'despues'],
 
-  // The shop itself, beside the "Un taller, no una agencia" copy.
-  ['imagen local 1.jpeg', 'nosotros', 'local-1'],
-  ['imagen local 2.jpeg', 'nosotros', 'local-2'],
+  // The second before/after: one crash shot against three finished angles. These
+  // are deliberately NOT dimension-matched — it is a labelled layout, not a
+  // slider, so each photo keeps its own shape and nothing is cropped to agree.
+  ['carroantes.webp', 'comparador2', 'antes'],
+  ['carro1.jpeg', 'comparador2', 'despues-1'],
+  ['carro3.jpeg', 'comparador2', 'despues-2'],
+  ['carro2.jpeg', 'comparador2', 'despues-3'],
+
+  // The shop itself, in the "Un taller, no una agencia" section. `taller-2` is
+  // the section background and `taller-1` the foreground photo.
+  ['taller1.jpeg', 'nosotros', 'taller-1'],
+  ['taller2.jpeg', 'nosotros', 'taller-2'],
 ];
 
 /**
@@ -65,8 +78,7 @@ const PHOTOS = [
 const MUST_MATCH = [['comparador/antes', 'comparador/despues']];
 
 /** Reads intrinsic size straight out of the JPEG SOFn marker. */
-function jpegSize(file) {
-  const b = readFileSync(file);
+function jpegSize(b, file) {
   let i = 2;
   while (i < b.length) {
     if (b[i] !== 0xff) {
@@ -80,6 +92,39 @@ function jpegSize(file) {
     i += 2 + b.readUInt16BE(i + 2);
   }
   throw new Error(`No SOF marker in ${file}`);
+}
+
+/**
+ * Reads intrinsic size out of a RIFF/WEBP container. All three bitstream
+ * flavours are handled because we do not control what a phone or a messaging app
+ * hands us: VP8 (lossy), VP8L (lossless) and VP8X (extended (animation, alpha)).
+ */
+function webpSize(b, file) {
+  const chunk = b.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') {
+    return { width: 1 + b.readUIntLE(24, 3), height: 1 + b.readUIntLE(27, 3) };
+  }
+  if (chunk === 'VP8 ') {
+    // The 3-byte start code precedes the 14-bit width and height.
+    const o = b.indexOf(Buffer.from([0x9d, 0x01, 0x2a]), 20);
+    if (o < 0) throw new Error(`No VP8 start code in ${file}`);
+    return { width: b.readUInt16LE(o + 3) & 0x3fff, height: b.readUInt16LE(o + 5) & 0x3fff };
+  }
+  if (chunk === 'VP8L') {
+    const bits = b.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+  }
+  throw new Error(`Unrecognised WebP chunk "${chunk}" in ${file}`);
+}
+
+/** Intrinsic size of an original, dispatched on magic bytes rather than suffix. */
+function imageSize(file) {
+  const b = readFileSync(file);
+  if (b[0] === 0xff && b[1] === 0xd8) return jpegSize(b, file);
+  if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') {
+    return webpSize(b, file);
+  }
+  throw new Error(`Unsupported original (not JPEG or WebP): ${file}`);
 }
 
 const run = (args) =>
@@ -99,7 +144,7 @@ const published = new Map();
 
 for (const [name, section, slug] of PHOTOS) {
   const input = resolve(SOURCE_DIR, name);
-  const { width: w0, height: h0 } = jpegSize(input);
+  const { width: w0, height: h0 } = imageSize(input);
   const outDir = resolve(OUT_DIR, section);
   mkdirSync(outDir, { recursive: true });
 

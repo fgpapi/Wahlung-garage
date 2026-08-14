@@ -20,7 +20,9 @@ import puppeteer from 'puppeteer-core';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SHOT_DIR = resolve(root, '.audit');
-const URL = process.env.AUDIT_URL ?? 'http://127.0.0.1:5173/';
+// `localhost`, not `127.0.0.1`: Vite binds the hostname, and on Windows that
+// resolves to IPv6 ::1 first, so the literal IPv4 address is refused outright.
+const URL = process.env.AUDIT_URL ?? 'http://localhost:5173/';
 const WANT_SHOTS = process.argv.includes('--shots');
 
 const CHROME_CANDIDATES = [

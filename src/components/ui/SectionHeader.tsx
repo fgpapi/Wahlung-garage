@@ -1,6 +1,14 @@
 import { cn } from '../../lib/cn';
 
-export type Tone = 'light' | 'dark';
+/**
+ * `photo` is `dark` for a section whose background is a photograph rather than a
+ * flat fill. The muted ink (#A8B2C1) needs the surface behind it to sit at or
+ * below 0.059 relative luminance to clear 4.5:1, which over a blown-out sky
+ * would take a ~76% scrim and flatten the picture to a smear. White needs only
+ * ~56%, so on a photo every level of the header is white and the hierarchy is
+ * carried by size and tracking instead of by colour.
+ */
+export type Tone = 'light' | 'dark' | 'photo';
 
 interface SectionHeaderProps {
   eyebrow: string;
@@ -25,17 +33,27 @@ export function SectionHeader({
   titleId,
   className,
 }: SectionHeaderProps) {
-  const dark = tone === 'dark';
+  const onPhoto = tone === 'photo';
+  const dark = tone === 'dark' || onPhoto;
 
   return (
     <header
       className={cn(
         'border-t pt-6 sm:pt-8',
-        dark ? 'border-line-invert-strong' : 'border-line-strong',
+        onPhoto
+          ? 'border-ink-invert/35'
+          : dark
+            ? 'border-line-invert-strong'
+            : 'border-line-strong',
         className,
       )}
     >
-      <p className={cn('type-eyebrow', dark ? 'text-ink-invert-muted' : 'text-ink-muted')}>
+      <p
+        className={cn(
+          'type-eyebrow',
+          onPhoto ? 'text-ink-invert' : dark ? 'text-ink-invert-muted' : 'text-ink-muted',
+        )}
+      >
         {eyebrow}
       </p>
 
@@ -54,7 +72,7 @@ export function SectionHeader({
         <p
           className={cn(
             'mt-4 max-w-[62ch] text-base leading-relaxed sm:text-lg',
-            dark ? 'text-ink-invert-muted' : 'text-ink-muted',
+            onPhoto ? 'text-ink-invert' : dark ? 'text-ink-invert-muted' : 'text-ink-muted',
           )}
         >
           {lede}

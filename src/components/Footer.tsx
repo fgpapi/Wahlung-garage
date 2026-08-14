@@ -1,6 +1,15 @@
 import { Container } from './ui/Container';
 import { Logo } from './ui/Logo';
-import { ADDRESS, HOURS, NAV_LINKS, PHONES, SERVICE_NAV, SITE } from '../data/site';
+import {
+  ADDRESS,
+  EMAIL,
+  HOURS,
+  NAV_LINKS,
+  PHONES,
+  SERVICE_NAV,
+  SITE,
+  mailtoHref,
+} from '../data/site';
 import { FOOTER } from '../data/copy';
 import { formatPhone, telHref } from '../lib/whatsapp';
 
@@ -60,6 +69,12 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
+              <a
+                href={mailtoHref()}
+                className="flex min-h-11 items-center font-mono text-sm break-all text-ink-invert transition-colors hover:text-brand-primary"
+              >
+                {EMAIL}
+              </a>
               <span className="text-sm text-ink-invert-muted">
                 {`${HOURS.label}, ${HOURS.range}`}
               </span>

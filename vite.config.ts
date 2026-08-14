@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { resolveSiteUrl } from './src/lib/site-url';
 import { MAP_LINK_URL } from './src/lib/geo';
+import { EMAIL } from './src/lib/email';
 
 /**
  * index.html, robots.txt and sitemap.xml are static files that never reach the
@@ -19,6 +20,7 @@ function siteUrls(siteUrl: string): Plugin {
   const tokens: Record<string, string> = {
     '%SITE_URL%': siteUrl,
     '%MAP_LINK_URL%': MAP_LINK_URL,
+    '%EMAIL%': EMAIL,
   };
   const fill = (input: string) =>
     Object.entries(tokens).reduce((acc, [token, value]) => acc.split(token).join(value), input);

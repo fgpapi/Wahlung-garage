@@ -6,6 +6,7 @@ import { Benefits } from './components/Benefits';
 import { Process } from './components/Process';
 import { Gallery } from './components/Gallery';
 import { BeforeAfter } from './components/BeforeAfter';
+import { BeforeAfterSet } from './components/BeforeAfterSet';
 import { About } from './components/About';
 import { Testimonials } from './components/Testimonials';
 import { Faq } from './components/Faq';
@@ -32,6 +33,7 @@ export function App() {
         <Process />
         <Gallery />
         <BeforeAfter />
+        <BeforeAfterSet />
         <About />
         <Testimonials />
         <Faq />

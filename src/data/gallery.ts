@@ -237,30 +237,89 @@ export const COMPARISON: { before: PhotoSlot; after: PhotoSlot } = {
 };
 
 /**
- * The shop itself, beside the "Un taller, no una agencia" copy. Both are 4:3
- * landscape, so the section pairs them as one large plus one offset smaller
- * rather than as two equal squares.
+ * The second before/after: one crash shot against three finished angles.
+ *
+ * Deliberately not a slider. The "antes" is a 640x853 portrait taken on the
+ * street the day the car came in; the three "después" are 1600x1204 landscapes
+ * from three different angles. Nothing lines up, so the section labels the two
+ * groups in plain Spanish instead of asking anyone to drag a handle and guess.
+ * Each photo keeps its own intrinsic size and is never cropped to agree with
+ * the others — which is why no MUST_MATCH entry exists for this set.
  */
-export const ABOUT_PHOTOS: readonly PhotoSlot[] = [
-  {
-    id: 'nosotros-predio',
-    caption: 'El predio, sobre la calle principal de Aldea Germania',
-    alt: 'Terreno del taller delimitado por un muro de piedra y ladrillo, con los medidores eléctricos a un costado y un edificio de dos niveles con portones negros al fondo',
-    stem: '/images/nosotros/local-1',
-    widths: [640, 1024, 1600],
-    width: 1600,
-    height: 1200,
+export const COMPARISON_SET: { before: PhotoSlot; after: readonly PhotoSlot[] } = {
+  before: {
+    id: 'comparador2-antes',
+    caption: 'Antes: choque frontal el día que entró',
+    alt: 'Honda Civic rojo con todo el frente destruido por un choque: el capó plegado, la farola izquierda deshecha, el parachoques desprendido y el radiador a la vista, sobre la grava a la entrada del taller',
+    stem: '/images/comparador2/antes',
+    widths: [640],
+    width: 640,
+    height: 853,
   },
-  {
-    id: 'nosotros-patio',
-    caption: 'El patio de maniobras y la nave de trabajo',
-    alt: 'Patio de concreto del taller con la nave de lámina abierta a un costado, los portones de servicio al fondo y el cerro detrás',
-    stem: '/images/nosotros/local-2',
-    widths: [640, 1024, 1600],
-    width: 1600,
-    height: 1200,
-  },
-] as const;
+  after: [
+    {
+      id: 'comparador2-despues-1',
+      caption: 'Después: el frente reconstruido y pintado',
+      alt: 'El mismo Honda Civic rojo ya reparado, de frente en tres cuartos, con el capó liso, las farolas nuevas alineadas y el parachoques montado, sin rastro del golpe',
+      stem: '/images/comparador2/despues-1',
+      widths: [640, 1024, 1600],
+      width: 1600,
+      height: 1204,
+    },
+    {
+      id: 'comparador2-despues-2',
+      caption: 'Después: el costado contrario, ya armado',
+      alt: 'El Honda Civic rojo terminado visto desde el costado delantero contrario, con el guardafango, la puerta y el parachoques alineados y la pintura roja pareja en todos los paneles',
+      stem: '/images/comparador2/despues-2',
+      widths: [640, 1024, 1600],
+      width: 1600,
+      height: 1204,
+    },
+    {
+      id: 'comparador2-despues-3',
+      caption: 'Después: cola, alerón y rines terminados',
+      alt: 'El Honda Civic rojo terminado visto desde atrás en tres cuartos, con el alerón montado, las calaveras y los vidrios polarizados limpios y la pintura pulida a lo largo de todo el costado',
+      stem: '/images/comparador2/despues-3',
+      widths: [640, 1024, 1600],
+      width: 1600,
+      height: 1204,
+    },
+  ],
+};
+
+/**
+ * The foreground photo in "Un taller, no una agencia": one unit actually in work,
+ * masked and waiting for the booth, rather than an empty establishing shot.
+ */
+export const ABOUT_PHOTO: PhotoSlot = {
+  id: 'nosotros-taller',
+  caption: 'Hilux enmascarada, lista para entrar a pintura',
+  alt: 'Toyota Hilux plateada de doble cabina en el patio del taller, con el guardafango delantero y la llanta enmascarados con papel para pintar y otra pickup blanca esperando turno al fondo',
+  stem: '/images/nosotros/taller-1',
+  widths: [640, 1024, 1600],
+  width: 1600,
+  height: 1204,
+};
+
+/**
+ * The panorama behind the whole section. Decorative on purpose: it is absolutely
+ * positioned as the first child of the section, so a real alt would read a long
+ * yard description out before the heading, and everything it shows ("a working
+ * yard, not a showroom") is already stated by the title and body copy.
+ *
+ * At 2.68:1 it is far wider than any viewport it backs, so `object-fit: cover`
+ * always crops it horizontally and shows its full height — `object-position`
+ * therefore only moves the horizontal window, never the sky.
+ */
+export const ABOUT_BACKGROUND: PhotoSlot = {
+  id: 'nosotros-fondo',
+  caption: 'El patio del taller visto de extremo a extremo',
+  alt: '',
+  stem: '/images/nosotros/taller-2',
+  widths: [640, 1024, 1600],
+  width: 1600,
+  height: 598,
+};
 
 /** Maps a ratio token to the CSS `aspect-ratio` value. */
 export const RATIO_CSS: Record<PhotoRatio, string> = {

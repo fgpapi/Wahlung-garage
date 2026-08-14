@@ -102,3 +102,9 @@ export {
   MAP_LINK_URL,
   MAP_EMBED_URL,
 } from '../lib/geo';
+
+/**
+ * The shop's email. In `lib/email.ts` for the same reason as the map URLs: the
+ * JSON-LD in index.html is filled from it at build time by vite.config.ts.
+ */
+export { EMAIL, mailtoHref } from '../lib/email';

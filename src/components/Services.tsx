@@ -5,7 +5,7 @@ import { Photo } from './ui/Photo';
 import { Reveal } from './ui/Reveal';
 import { WhatsAppCta } from './ui/WhatsAppCta';
 import { SERVICES, type Service } from '../data/services';
-import { SERVICE_PHOTOS } from '../data/gallery';
+import { SERVICE_AFTER_PHOTOS, SERVICE_PHOTOS, type PhotoSlot } from '../data/gallery';
 import { SECTIONS, SERVICE_SECTION } from '../data/copy';
 import { cn } from '../lib/cn';
 
@@ -100,6 +100,7 @@ export function ServiceSections() {
 function ServiceDetail({ service, index }: { service: Service; index: number }) {
   const reversed = index % 2 === 1;
   const photo = SERVICE_PHOTOS[service.id];
+  const afterPhotos = SERVICE_AFTER_PHOTOS[service.id];
   const titleId = `${service.id}-title`;
 
   return (
@@ -115,7 +116,9 @@ function ServiceDetail({ service, index }: { service: Service; index: number }) 
           >
             {/* Not 100vw: Container takes 1.25rem of padding a side on phones,
                 so declaring the full viewport over-asks for a rung. */}
-            {photo ? (
+            {photo && afterPhotos?.length ? (
+              <ServiceComparison before={photo} after={afterPhotos} />
+            ) : photo ? (
               <Photo slot={photo} sizes="(min-width: 1024px) 46vw, calc(100vw - 2.5rem)" />
             ) : null}
           </Reveal>
@@ -155,5 +158,67 @@ function ServiceDetail({ service, index }: { service: Service; index: number }) 
         </div>
       </Container>
     </section>
+  );
+}
+
+/**
+ * A service section's own antes/después: the shot of the work in progress on
+ * top, the finished frames under it as a pair.
+ *
+ * Deliberately not the drag comparator. That one needs both halves shot from the
+ * same point at the same size, and these are a masked front end inside the shop
+ * against two finished angles out on the street — no handle position lines those
+ * up. The comparison is carried by the labels instead, one stamped on every
+ * frame so it reads the same on a phone as on a desktop, where the two "después"
+ * sit side by side under the "antes".
+ */
+function ServiceComparison({
+  before,
+  after,
+}: {
+  before: PhotoSlot;
+  after: readonly PhotoSlot[];
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <Stamped
+        slot={before}
+        label={SERVICE_SECTION.beforeLabel}
+        sizes="(min-width: 1024px) 46vw, calc(100vw - 2.5rem)"
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {after.map((slot) => (
+          <Stamped
+            key={slot.id}
+            slot={slot}
+            label={SERVICE_SECTION.afterLabel}
+            sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, calc(100vw - 2.5rem)"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** One frame with its state stamped on it, in the comparators' own dark chip. */
+function Stamped({
+  slot,
+  label,
+  sizes,
+}: {
+  slot: PhotoSlot;
+  label: string;
+  sizes: string;
+}) {
+  return (
+    <div className="relative">
+      <Photo slot={slot} sizes={sizes} />
+      {/* At 80% ink the chip lands under 0.05 relative luminance over even a
+          blown-out sky, so the white label holds above 11:1 on any photo. */}
+      <span className="type-eyebrow pointer-events-none absolute top-3 left-3 border border-line-invert-strong bg-ink/80 px-2.5 py-1.5 text-[0.625rem] text-ink-invert">
+        {label}
+      </span>
+    </div>
   );
 }

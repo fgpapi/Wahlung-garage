@@ -210,6 +210,40 @@ export const SERVICE_PHOTOS: Record<string, PhotoSlot> = {
 };
 
 /**
+ * The finished frames that turn a service section into its own antes/después.
+ *
+ * The slot in SERVICE_PHOTOS above is the work in progress; these are the same
+ * vehicle once it left. Keyed by service id, so a section without an entry keeps
+ * rendering the single supporting photo exactly as before.
+ *
+ * Unlike COMPARISON these are not dimension-matched to the "antes" — the section
+ * labels each frame instead of sliding one over the other, so every photo keeps
+ * its own intrinsic size and nothing is cropped to agree.
+ */
+export const SERVICE_AFTER_PHOTOS: Record<string, readonly PhotoSlot[]> = {
+  'mecanica-general': [
+    {
+      id: 'servicio-mecanica-despues-1',
+      caption: 'La misma L200 entregada, con el frente completo',
+      alt: 'Mitsubishi L200 doble cabina en verde olivo mate, vista de frente en tres cuartos ya fuera del taller, con la parrilla, las farolas y el parachoques montados y el frente sin rastro del desarme',
+      stem: '/images/servicios/mecanica-despues-1',
+      widths: [640, 1024, 1600],
+      width: 1600,
+      height: 900,
+    },
+    {
+      id: 'servicio-mecanica-despues-2',
+      caption: 'Costado y cola terminados, lista para entregar',
+      alt: 'La misma Mitsubishi L200 verde olivo mate vista desde el costado trasero en tres cuartos, con la paila cargada, las calaveras y los rines limpios y la pintura pareja a lo largo de todos los paneles',
+      stem: '/images/servicios/mecanica-despues-2',
+      widths: [640, 1024, 1600],
+      width: 1600,
+      height: 900,
+    },
+  ],
+};
+
+/**
  * The before/after comparator: the same Mazda 3, same rear three-quarter angle.
  * Both files are published at exactly 1600x1204 — `MUST_MATCH` in
  * scripts/build-photos.mjs fails the build if that ever stops being true, because

@@ -100,6 +100,9 @@ export const SERVICE_SECTION = {
   ctaPrefix: 'Cotizar',
   /** Rendered before the service name on the anchor link in the overview card. */
   detailLink: 'Ver detalle',
+  /** Stamped on each frame when a service section carries an antes/después pair. */
+  beforeLabel: 'Antes',
+  afterLabel: 'Después',
 } as const;
 
 export const FAQ_ASIDE = {

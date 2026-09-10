@@ -36,6 +36,9 @@ const PHOTOS = [
   // One supporting photo per service section.
   ['imagen pintura  1.jpeg', 'servicios', 'pintura-1'],
   ['imagen mecanica general.jpeg', 'servicios', 'mecanica-general'],
+  // The same L200 finished, for the antes/despues pair inside Mecanica General.
+  ['carro arreglado.jpeg', 'servicios', 'mecanica-despues-1'],
+  ['arreglado 2.jpeg', 'servicios', 'mecanica-despues-2'],
   ['Imagen 3 - Polarizado.jpeg', 'servicios', 'polarizado-1'],
   ['Imagen tapiceria 1.jpeg', 'servicios', 'tapiceria-1'],
 
